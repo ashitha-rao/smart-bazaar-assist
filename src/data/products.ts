@@ -1,0 +1,185 @@
+import { Product } from '@/context/CartContext';
+
+export const sampleProducts: Product[] = [
+  {
+    id: '1',
+    name: 'Organic Whole Wheat Bread',
+    brand: 'Nature\'s Own',
+    price: 45,
+    originalPrice: 55,
+    offer: '18% OFF',
+    category: 'Bakery',
+    aisle: 'A1',
+    stock: 3,
+    expiryDate: '2026-01-10',
+    image: '🍞',
+  },
+  {
+    id: '2',
+    name: 'Farm Fresh Milk',
+    brand: 'Amul',
+    price: 28,
+    category: 'Dairy',
+    aisle: 'B2',
+    stock: 25,
+    expiryDate: '2026-01-08',
+    image: '🥛',
+  },
+  {
+    id: '3',
+    name: 'Red Apples (1kg)',
+    brand: 'Fresh Farms',
+    price: 120,
+    originalPrice: 150,
+    offer: '20% OFF',
+    category: 'Fruits',
+    aisle: 'C3',
+    stock: 15,
+    expiryDate: '2026-01-15',
+    image: '🍎',
+  },
+  {
+    id: '4',
+    name: 'Fresh Broccoli',
+    brand: 'Green Valley',
+    price: 35,
+    category: 'Vegetables',
+    aisle: 'C1',
+    stock: 8,
+    expiryDate: '2026-01-09',
+    image: '🥦',
+  },
+  {
+    id: '5',
+    name: 'Strawberry Jam',
+    brand: 'Kissan',
+    price: 85,
+    originalPrice: 95,
+    offer: '10% OFF',
+    category: 'Spreads',
+    aisle: 'D2',
+    stock: 20,
+    expiryDate: '2026-06-20',
+    image: '🍓',
+  },
+  {
+    id: '6',
+    name: 'Butter (500g)',
+    brand: 'Amul',
+    price: 240,
+    category: 'Dairy',
+    aisle: 'B2',
+    stock: 12,
+    expiryDate: '2026-02-15',
+    image: '🧈',
+  },
+  {
+    id: '7',
+    name: 'Orange Juice (1L)',
+    brand: 'Tropicana',
+    price: 95,
+    category: 'Beverages',
+    aisle: 'E1',
+    stock: 2,
+    expiryDate: '2026-01-12',
+    image: '🍊',
+  },
+  {
+    id: '8',
+    name: 'Free Range Eggs (12)',
+    brand: 'Happy Hens',
+    price: 89,
+    category: 'Dairy',
+    aisle: 'B3',
+    stock: 30,
+    expiryDate: '2026-01-20',
+    image: '🥚',
+  },
+  {
+    id: '9',
+    name: 'Basmati Rice (5kg)',
+    brand: 'India Gate',
+    price: 450,
+    originalPrice: 520,
+    offer: '13% OFF',
+    category: 'Grains',
+    aisle: 'F1',
+    stock: 45,
+    expiryDate: '2026-12-01',
+    image: '🍚',
+  },
+  {
+    id: '10',
+    name: 'Greek Yogurt',
+    brand: 'Epigamia',
+    price: 65,
+    category: 'Dairy',
+    aisle: 'B1',
+    stock: 4,
+    expiryDate: '2026-01-11',
+    image: '🥄',
+  },
+  {
+    id: '11',
+    name: 'Dark Chocolate Bar',
+    brand: 'Cadbury',
+    price: 75,
+    category: 'Snacks',
+    aisle: 'G2',
+    stock: 50,
+    expiryDate: '2026-08-15',
+    image: '🍫',
+  },
+  {
+    id: '12',
+    name: 'Olive Oil (500ml)',
+    brand: 'Figaro',
+    price: 320,
+    originalPrice: 380,
+    offer: '16% OFF',
+    category: 'Cooking',
+    aisle: 'D1',
+    stock: 18,
+    expiryDate: '2027-01-01',
+    image: '🫒',
+  },
+];
+
+export const categories = [
+  'All',
+  'Bakery',
+  'Dairy',
+  'Fruits',
+  'Vegetables',
+  'Spreads',
+  'Beverages',
+  'Grains',
+  'Snacks',
+  'Cooking',
+];
+
+export const getRecommendations = (cartItems: Product[]): Product[] => {
+  const cartCategories = cartItems.map(item => item.category);
+  
+  const recommendations: { [key: string]: string[] } = {
+    'Bakery': ['Spreads', 'Dairy'],
+    'Dairy': ['Bakery', 'Fruits'],
+    'Fruits': ['Dairy', 'Snacks'],
+    'Vegetables': ['Cooking', 'Grains'],
+    'Spreads': ['Bakery', 'Dairy'],
+    'Beverages': ['Snacks', 'Dairy'],
+    'Grains': ['Cooking', 'Vegetables'],
+    'Snacks': ['Beverages', 'Dairy'],
+    'Cooking': ['Grains', 'Vegetables'],
+  };
+
+  const recommendedCategories = new Set<string>();
+  cartCategories.forEach(cat => {
+    recommendations[cat]?.forEach(rec => recommendedCategories.add(rec));
+  });
+
+  const cartIds = cartItems.map(item => item.id);
+  return sampleProducts
+    .filter(p => recommendedCategories.has(p.category) && !cartIds.includes(p.id))
+    .slice(0, 4);
+};
