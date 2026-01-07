@@ -7,14 +7,16 @@ import ProductCard from '@/components/ProductCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { sampleProducts, categories } from '@/data/products';
+import { useProducts } from '@/context/ProductContext';
+import { categories } from '@/data/products';
 
 const Products = () => {
+  const { products } = useProducts();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [isListening, setIsListening] = useState(false);
 
-  const filteredProducts = sampleProducts.filter((product) => {
+  const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.brand.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
