@@ -1,0 +1,245 @@
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Product } from '@/context/CartContext';
+import { categories } from '@/data/products';
+
+interface ProductFormModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (product: Omit<Product, 'id'>) => void;
+  editProduct?: Product | null;
+}
+
+const emojiOptions = ['🍞', '🥛', '🍎', '🥦', '🍓', '🧈', '🍊', '🥚', '🍚', '🥄', '🍫', '🫒', '🥕', '🍇', '🧀', '🥩', '🍗', '🐟', '🍜', '☕'];
+
+const ProductFormModal = ({ isOpen, onClose, onSubmit, editProduct }: ProductFormModalProps) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    brand: '',
+    price: '',
+    originalPrice: '',
+    offer: '',
+    category: 'Bakery',
+    aisle: '',
+    stock: '',
+    expiryDate: '',
+    image: '🍞',
+    description: '',
+  });
+
+  useEffect(() => {
+    if (editProduct) {
+      setFormData({
+        name: editProduct.name,
+        brand: editProduct.brand,
+        price: editProduct.price.toString(),
+        originalPrice: editProduct.originalPrice?.toString() || '',
+        offer: editProduct.offer || '',
+        category: editProduct.category,
+        aisle: editProduct.aisle,
+        stock: editProduct.stock.toString(),
+        expiryDate: editProduct.expiryDate,
+        image: editProduct.image,
+        description: '',
+      });
+    } else {
+      setFormData({
+        name: '',
+        brand: '',
+        price: '',
+        originalPrice: '',
+        offer: '',
+        category: 'Bakery',
+        aisle: '',
+        stock: '',
+        expiryDate: '',
+        image: '🍞',
+        description: '',
+      });
+    }
+  }, [editProduct, isOpen]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({
+      name: formData.name,
+      brand: formData.brand,
+      price: parseFloat(formData.price),
+      originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
+      offer: formData.offer || undefined,
+      category: formData.category,
+      aisle: formData.aisle,
+      stock: parseInt(formData.stock),
+      expiryDate: formData.expiryDate,
+      image: formData.image,
+    });
+    onClose();
+  };
+
+  const availableCategories = categories.filter(c => c !== 'All');
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 bg-foreground/60 flex items-center justify-center p-4"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-lg max-h-[90vh] overflow-y-auto"
+          >
+            <Card variant="elevated">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>{editProduct ? 'Edit Product' : 'Add New Product'}</CardTitle>
+                <Button variant="ghost" size="icon" onClick={onClose}>
+                  <X className="w-5 h-5" />
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-2 block">Product Name *</label>
+                    <Input
+                      required
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="e.g., Organic Whole Wheat Bread"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-2 block">Brand *</label>
+                    <Input
+                      required
+                      value={formData.brand}
+                      onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+                      placeholder="e.g., Nature's Own"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-2 block">Price (Rs.) *</label>
+                      <Input
+                        required
+                        type="number"
+                        min="0"
+                        value={formData.price}
+                        onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                        placeholder="45"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-2 block">Original Price</label>
+                      <Input
+                        type="number"
+                        min="0"
+                        value={formData.originalPrice}
+                        onChange={(e) => setFormData({ ...formData, originalPrice: e.target.value })}
+                        placeholder="55"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-2 block">Stock Quantity *</label>
+                      <Input
+                        required
+                        type="number"
+                        min="0"
+                        value={formData.stock}
+                        onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                        placeholder="10"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-2 block">Offer Tag</label>
+                      <Input
+                        value={formData.offer}
+                        onChange={(e) => setFormData({ ...formData, offer: e.target.value })}
+                        placeholder="e.g., 18% OFF"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-2 block">Category *</label>
+                      <select
+                        required
+                        value={formData.category}
+                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                        className="w-full h-10 px-3 rounded-md border border-input bg-background text-foreground"
+                      >
+                        {availableCategories.map((cat) => (
+                          <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-2 block">Aisle *</label>
+                      <Input
+                        required
+                        value={formData.aisle}
+                        onChange={(e) => setFormData({ ...formData, aisle: e.target.value })}
+                        placeholder="e.g., A1"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-2 block">Expiry Date *</label>
+                    <Input
+                      required
+                      type="date"
+                      value={formData.expiryDate}
+                      onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-2 block">Product Image *</label>
+                    <div className="flex flex-wrap gap-2">
+                      {emojiOptions.map((emoji) => (
+                        <button
+                          key={emoji}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, image: emoji })}
+                          className={`w-10 h-10 text-xl rounded-lg border-2 transition-all ${
+                            formData.image === emoji
+                              ? 'border-primary bg-primary/10'
+                              : 'border-border hover:border-primary/50'
+                          }`}
+                        >
+                          {emoji}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button type="submit" variant="hero" className="w-full" size="lg">
+                    {editProduct ? 'Update Product' : 'Add Product'}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+export default ProductFormModal;

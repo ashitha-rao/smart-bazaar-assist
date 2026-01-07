@@ -1,26 +1,32 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Minus, Plus, Trash2, CreditCard, ArrowLeft, Sparkles } from 'lucide-react';
+import { Minus, Plus, Trash2, CreditCard, ArrowLeft, Sparkles, Phone, MessageCircle, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import confetti from 'canvas-confetti';
 import Navbar from '@/components/Navbar';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { getRecommendations } from '@/data/products';
+import OTPAuthModal from '@/components/checkout/OTPAuthModal';
+import { generateBillPDF, generateWhatsAppMessage } from '@/lib/generateBill';
 
 const Checkout = () => {
   const { items, updateQuantity, removeFromCart, totalPrice, clearCart } = useCart();
+  const { isAuthenticated, phoneNumber } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [pendingPayment, setPendingPayment] = useState(false);
 
   const recommendations = getRecommendations(items);
   const gst = totalPrice * 0.05;
   const finalTotal = totalPrice + gst;
 
-  const handlePayment = () => {
+  const processPayment = () => {
     setShowScanner(true);
     setIsProcessing(true);
 
@@ -54,36 +60,45 @@ const Checkout = () => {
     }, 3000);
   };
 
-  const generateBillPDF = () => {
-    // Create bill content
-    const billContent = `
-SMART BAZAAR ASSISTANT
-━━━━━━━━━━━━━━━━━━━━━━
-Date: ${new Date().toLocaleDateString()}
-Time: ${new Date().toLocaleTimeString()}
-━━━━━━━━━━━━━━━━━━━━━━
+  const handlePayment = () => {
+    if (!isAuthenticated) {
+      setPendingPayment(true);
+      setShowOTPModal(true);
+    } else {
+      processPayment();
+    }
+  };
 
-ITEMS:
-${items.map(item => `${item.name} x${item.quantity} - Rs. ${item.price * item.quantity}`).join('\n')}
+  const handleOTPSuccess = () => {
+    if (pendingPayment) {
+      setPendingPayment(false);
+      processPayment();
+    }
+  };
 
-━━━━━━━━━━━━━━━━━━━━━━
-Subtotal: Rs. ${totalPrice.toFixed(2)}
-GST (5%): Rs. ${gst.toFixed(2)}
-━━━━━━━━━━━━━━━━━━━━━━
-TOTAL: Rs. ${finalTotal.toFixed(2)}
-━━━━━━━━━━━━━━━━━━━━━━
+  const handleDownloadBill = () => {
+    generateBillPDF({
+      items,
+      subtotal: totalPrice,
+      gst,
+      total: finalTotal,
+      phoneNumber: phoneNumber || 'Guest',
+    });
+  };
 
-Thank you for shopping with us!
-Visit again soon 🛒
-    `.trim();
-
-    const blob = new Blob([billContent], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `smart-bazaar-bill-${Date.now()}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const handleShareWhatsApp = () => {
+    const message = generateWhatsAppMessage({
+      items,
+      subtotal: totalPrice,
+      gst,
+      total: finalTotal,
+      phoneNumber: phoneNumber || 'Guest',
+    });
+    
+    // Extract just the number digits for WhatsApp
+    const cleanPhone = phoneNumber?.replace(/\D/g, '') || '';
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${message}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   if (isComplete) {
@@ -111,15 +126,68 @@ Visit again soon 🛒
               <h1 className="font-display text-3xl font-bold text-foreground mb-4">
                 Payment Successful!
               </h1>
-              <p className="text-muted-foreground mb-8">
+              <p className="text-muted-foreground mb-4">
                 Thank you for shopping with Smart Bazaar
               </p>
+              
+              {phoneNumber && (
+                <p className="text-sm text-muted-foreground mb-8">
+                  <Phone className="w-4 h-4 inline mr-1" />
+                  Bill sent to: {phoneNumber}
+                </p>
+              )}
+
+              <Card variant="elevated" className="mb-8">
+                <CardContent className="p-6">
+                  <h3 className="font-semibold text-foreground mb-4">Order Summary</h3>
+                  <div className="space-y-2 text-sm">
+                    {items.map(item => (
+                      <div key={item.id} className="flex justify-between">
+                        <span className="text-muted-foreground">{item.name} x{item.quantity}</span>
+                        <span className="text-foreground">Rs. {item.price * item.quantity}</span>
+                      </div>
+                    ))}
+                    <div className="h-px bg-border my-3" />
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Subtotal</span>
+                      <span className="text-foreground">Rs. {totalPrice.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">GST (5%)</span>
+                      <span className="text-foreground">Rs. {gst.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-lg pt-2">
+                      <span className="text-foreground">Total</span>
+                      <span className="text-primary">Rs. {finalTotal.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
               <div className="flex flex-col gap-4">
-                <Button variant="hero" size="lg" onClick={generateBillPDF}>
-                  📄 Download Bill (PDF)
-                </Button>
-                <Link to="/products">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button variant="hero" size="lg" className="w-full" onClick={handleDownloadBill}>
+                    <Download className="w-5 h-5 mr-2" />
+                    Download Bill (PDF)
+                  </Button>
+                </motion.div>
+                
+                {phoneNumber && (
+                  <Button 
+                    variant="outline" 
+                    size="lg" 
+                    className="w-full bg-green-500/10 border-green-500/30 text-green-600 hover:bg-green-500/20"
+                    onClick={handleShareWhatsApp}
+                  >
+                    <MessageCircle className="w-5 h-5 mr-2" />
+                    Share Bill via WhatsApp
+                  </Button>
+                )}
+                
+                <Link to="/products" className="w-full">
                   <Button variant="outline" size="lg" className="w-full" onClick={() => {
                     clearCart();
                     setIsComplete(false);
@@ -139,6 +207,16 @@ Visit again soon 🛒
   return (
     <div className="min-h-screen bg-background relative">
       <Navbar />
+
+      {/* OTP Auth Modal */}
+      <OTPAuthModal
+        isOpen={showOTPModal}
+        onClose={() => {
+          setShowOTPModal(false);
+          setPendingPayment(false);
+        }}
+        onSuccess={handleOTPSuccess}
+      />
 
       {/* Barcode Scanner Overlay */}
       <AnimatePresence>
@@ -341,6 +419,15 @@ Visit again soon 🛒
                     <CardTitle>Order Summary</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    {/* Verified Phone Display */}
+                    {isAuthenticated && phoneNumber && (
+                      <div className="flex items-center gap-2 p-3 bg-primary/10 rounded-xl">
+                        <Phone className="w-4 h-4 text-primary" />
+                        <span className="text-sm text-foreground">{phoneNumber}</span>
+                        <Badge variant="secondary" className="ml-auto text-xs">Verified</Badge>
+                      </div>
+                    )}
+                    
                     <div className="flex justify-between text-muted-foreground">
                       <span>Subtotal ({items.length} items)</span>
                       <span>Rs. {totalPrice.toFixed(2)}</span>
@@ -363,9 +450,15 @@ Visit again soon 🛒
                       disabled={isProcessing}
                     >
                       <CreditCard className="w-5 h-5 mr-2" />
-                      {isProcessing ? 'Processing...' : 'Pay Now'}
+                      {isProcessing ? 'Processing...' : isAuthenticated ? 'Pay Now' : 'Verify & Pay'}
                     </Button>
 
+                    {!isAuthenticated && (
+                      <p className="text-xs text-muted-foreground text-center">
+                        Phone verification required before payment
+                      </p>
+                    )}
+                    
                     <p className="text-xs text-muted-foreground text-center">
                       Secure payment powered by Smart Bazaar
                     </p>

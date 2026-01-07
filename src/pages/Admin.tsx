@@ -1,19 +1,25 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Lock, AlertTriangle, Package, Users, TrendingUp, Clock } from 'lucide-react';
+import { Lock, AlertTriangle, Package, Users, TrendingUp, Clock, Plus } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { sampleProducts } from '@/data/products';
+import { useProducts } from '@/context/ProductContext';
+import ProductFormModal from '@/components/admin/ProductFormModal';
+import ProductManagement from '@/components/admin/ProductManagement';
+import { Product } from '@/context/CartContext';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  const { products, addProduct } = useProducts();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,8 +31,12 @@ const Admin = () => {
     }
   };
 
-  const lowStockProducts = sampleProducts.filter(p => p.stock < 5);
-  const nearExpiryProducts = sampleProducts.filter(p => {
+  const handleAddProduct = (productData: Omit<Product, 'id'>) => {
+    addProduct(productData);
+  };
+
+  const lowStockProducts = products.filter(p => p.stock < 5);
+  const nearExpiryProducts = products.filter(p => {
     const daysUntilExpiry = Math.ceil(
       (new Date(p.expiryDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
     );
@@ -105,18 +115,24 @@ const Admin = () => {
       <Navbar />
       <main className="pt-24 pb-12 px-4">
         <div className="container mx-auto max-w-7xl">
-          {/* Header */}
+          {/* Header with Add Product Button */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-8"
+            className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
           >
-            <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-2">
-              Admin Dashboard
-            </h1>
-            <p className="text-muted-foreground">
-              Manage your Smart Bazaar inventory and customers
-            </p>
+            <div>
+              <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-2">
+                Admin Dashboard
+              </h1>
+              <p className="text-muted-foreground">
+                Manage your Smart Bazaar inventory and customers
+              </p>
+            </div>
+            <Button variant="hero" size="lg" onClick={() => setShowAddModal(true)}>
+              <Plus className="w-5 h-5 mr-2" />
+              Add Product
+            </Button>
           </motion.div>
 
           {/* Stats Grid */}
@@ -127,7 +143,7 @@ const Admin = () => {
             className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
           >
             {[
-              { icon: Package, label: 'Total Products', value: sampleProducts.length, color: 'bg-primary' },
+              { icon: Package, label: 'Total Products', value: products.length, color: 'bg-primary' },
               { icon: AlertTriangle, label: 'Low Stock', value: lowStockProducts.length, color: 'bg-destructive' },
               { icon: Clock, label: 'Near Expiry', value: nearExpiryProducts.length, color: 'bg-warning' },
               { icon: Users, label: 'Customers Today', value: customerInsights.length, color: 'bg-bazaar-lavender' },
@@ -163,7 +179,7 @@ const Admin = () => {
                 <CardContent>
                   {lowStockProducts.length === 0 ? (
                     <p className="text-muted-foreground text-center py-4">
-                      All products are well stocked! ✅
+                      All products are well stocked!
                     </p>
                   ) : (
                     <div className="space-y-3">
@@ -206,7 +222,7 @@ const Admin = () => {
                 <CardContent>
                   {nearExpiryProducts.length === 0 ? (
                     <p className="text-muted-foreground text-center py-4">
-                      No products near expiry! ✅
+                      No products near expiry!
                     </p>
                   ) : (
                     <div className="space-y-3">
@@ -280,6 +296,16 @@ const Admin = () => {
             </Card>
           </motion.div>
 
+          {/* Product Management Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="mt-8"
+          >
+            <ProductManagement />
+          </motion.div>
+
           {/* Logout */}
           <div className="mt-8 text-center">
             <Button
@@ -291,6 +317,13 @@ const Admin = () => {
           </div>
         </div>
       </main>
+
+      {/* Add Product Modal */}
+      <ProductFormModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSubmit={handleAddProduct}
+      />
     </div>
   );
 };
