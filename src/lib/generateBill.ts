@@ -6,11 +6,11 @@ interface BillData {
   subtotal: number;
   gst: number;
   total: number;
-  phoneNumber: string;
+  email: string;
 }
 
 export const generateBillPDF = (data: BillData): void => {
-  const { items, subtotal, gst, total, phoneNumber } = data;
+  const { items, subtotal, gst, total, email } = data;
   const doc = new jsPDF();
   
   const billNumber = `SB${Date.now().toString().slice(-8)}`;
@@ -52,9 +52,9 @@ export const generateBillPDF = (data: BillData): void => {
   
   // Right side - Customer info
   doc.setFont('helvetica', 'bold');
-  doc.text('Customer Phone:', 120, 55);
+  doc.text('Customer Email:', 120, 55);
   doc.setFont('helvetica', 'normal');
-  doc.text(phoneNumber, 160, 55);
+  doc.text(email, 155, 55);
   
   // Divider line
   doc.setDrawColor(200, 200, 200);
@@ -139,7 +139,7 @@ export const generateBillPDF = (data: BillData): void => {
 };
 
 export const generateWhatsAppMessage = (data: BillData): string => {
-  const { items, total, phoneNumber } = data;
+  const { items, total, email } = data;
   const billNumber = `SB${Date.now().toString().slice(-8)}`;
   const date = new Date().toLocaleDateString('en-IN');
   
@@ -147,7 +147,7 @@ export const generateWhatsAppMessage = (data: BillData): string => {
   message += `━━━━━━━━━━━━━━━━━━━━\n`;
   message += `📋 Bill No: ${billNumber}\n`;
   message += `📅 Date: ${date}\n`;
-  message += `📱 Phone: ${phoneNumber}\n`;
+  message += `📧 Email: ${email}\n`;
   message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
   message += `*Items Purchased:*\n`;
   
