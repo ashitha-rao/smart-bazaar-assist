@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import AisleMap from './AisleMap';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface ProductCardProps {
   product: Product;
@@ -13,6 +14,7 @@ interface ProductCardProps {
 
 const ProductCard = ({ product }: ProductCardProps) => {
   const { addToCart } = useCart();
+  const { t } = useLanguage();
   const [showMap, setShowMap] = useState(false);
   const [flyingEmoji, setFlyingEmoji] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -31,6 +33,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
       setFlyingEmoji(false);
     }, 600);
   };
+
+  const isImageUrl = product.image.startsWith('http');
 
   return (
     <>
@@ -51,30 +55,39 @@ const ProductCard = ({ product }: ProductCardProps) => {
           {isLowStock && (
             <Badge variant="destructive" className="text-xs">
               <AlertTriangle className="w-3 h-3 mr-1" />
-              Only {product.stock} left
+              {t.onlyLeft} {product.stock} {t.left}
             </Badge>
           )}
           {isNearExpiry && (
             <Badge variant="outline" className="text-xs bg-warning/20 border-warning text-warning-foreground">
-              Expires in {daysUntilExpiry} days
+              {t.expiresIn} {daysUntilExpiry} {t.days}
             </Badge>
           )}
         </div>
 
         {/* Product Image */}
-        <div className="relative h-32 bg-gradient-to-br from-secondary to-accent flex items-center justify-center">
-          <motion.span 
-            className="text-6xl"
-            whileHover={{ scale: 1.1, rotate: 5 }}
-          >
-            {product.image}
-          </motion.span>
+        <div className="relative h-32 bg-gradient-to-br from-secondary to-accent flex items-center justify-center overflow-hidden">
+          {isImageUrl ? (
+            <motion.img 
+              src={product.image}
+              alt={product.name}
+              className="w-full h-full object-cover"
+              whileHover={{ scale: 1.05 }}
+            />
+          ) : (
+            <motion.span 
+              className="text-6xl"
+              whileHover={{ scale: 1.1, rotate: 5 }}
+            >
+              {product.image}
+            </motion.span>
+          )}
 
           {/* Flying Animation */}
           <AnimatePresence>
             {flyingEmoji && (
-              <motion.span
-                className="absolute text-4xl z-20"
+              <motion.div
+                className="absolute z-20 w-12 h-12 rounded-full bg-primary flex items-center justify-center"
                 initial={{ scale: 1, x: 0, y: 0 }}
                 animate={{
                   scale: 0.3,
@@ -85,8 +98,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.6, ease: 'easeOut' }}
               >
-                {product.image}
-              </motion.span>
+                <Plus className="w-6 h-6 text-primary-foreground" />
+              </motion.div>
             )}
           </AnimatePresence>
         </div>
@@ -128,7 +141,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
               onClick={handleAddToCart}
             >
               <Plus className="w-4 h-4" />
-              Add to Cart
+              {t.addToCart}
             </Button>
             <Button
               variant="outline"
@@ -141,7 +154,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
           {/* Aisle Info */}
           <div className="mt-3 text-xs text-muted-foreground text-center">
-            Aisle {product.aisle}
+            {t.aisle} {product.aisle}
           </div>
         </CardContent>
       </Card>

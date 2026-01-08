@@ -1,20 +1,30 @@
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ShoppingCart, Home, Package, Shield, Menu, X } from 'lucide-react';
+import { ShoppingCart, Home, Package, Shield, Menu, X, Globe } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { useLanguage, Language, languageNames } from '@/context/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const Navbar = () => {
   const location = useLocation();
   const { totalItems, cartBounce } = useCart();
+  const { language, setLanguage, t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { to: '/', label: 'Home', icon: Home },
-    { to: '/products', label: 'Products', icon: Package },
-    { to: '/admin', label: 'Admin', icon: Shield },
+    { to: '/', label: t.home, icon: Home },
+    { to: '/products', label: t.products, icon: Package },
+    { to: '/admin', label: t.admin, icon: Shield },
   ];
+
+  const languages: Language[] = ['en', 'kn', 'hi'];
 
   return (
     <motion.nav
@@ -34,7 +44,7 @@ const Navbar = () => {
               🛒
             </motion.span>
             <span className="font-display font-bold text-xl text-foreground hidden sm:block">
-              Smart Bazaar
+              {t.smartBazaar}
             </span>
           </Link>
 
@@ -58,8 +68,30 @@ const Navbar = () => {
             })}
           </div>
 
-          {/* Cart Button */}
+          {/* Right Side - Language & Cart */}
           <div className="flex items-center gap-2">
+            {/* Language Selector */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <Globe className="w-4 h-4" />
+                  <span className="hidden sm:inline">{languageNames[language]}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {languages.map((lang) => (
+                  <DropdownMenuItem
+                    key={lang}
+                    onClick={() => setLanguage(lang)}
+                    className={language === lang ? 'bg-primary/10' : ''}
+                  >
+                    {languageNames[lang]}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Cart Button */}
             <Link to="/checkout">
               <motion.div
                 animate={cartBounce ? { scale: [1, 1.2, 1] } : {}}

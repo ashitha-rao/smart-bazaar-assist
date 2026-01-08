@@ -4,7 +4,7 @@ export const sampleProducts: Product[] = [
   {
     id: '1',
     name: 'Organic Whole Wheat Bread',
-    brand: 'Nature\'s Own',
+    brand: "Nature's Own",
     price: 45,
     originalPrice: 55,
     offer: '18% OFF',
@@ -12,7 +12,7 @@ export const sampleProducts: Product[] = [
     aisle: 'A1',
     stock: 3,
     expiryDate: '2026-01-10',
-    image: '🍞',
+    image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=300&q=80',
   },
   {
     id: '2',
@@ -23,7 +23,7 @@ export const sampleProducts: Product[] = [
     aisle: 'B2',
     stock: 25,
     expiryDate: '2026-01-08',
-    image: '🥛',
+    image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=300&q=80',
   },
   {
     id: '3',
@@ -36,7 +36,7 @@ export const sampleProducts: Product[] = [
     aisle: 'C3',
     stock: 15,
     expiryDate: '2026-01-15',
-    image: '🍎',
+    image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=300&q=80',
   },
   {
     id: '4',
@@ -47,7 +47,7 @@ export const sampleProducts: Product[] = [
     aisle: 'C1',
     stock: 8,
     expiryDate: '2026-01-09',
-    image: '🥦',
+    image: 'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?auto=format&fit=crop&w=300&q=80',
   },
   {
     id: '5',
@@ -60,7 +60,7 @@ export const sampleProducts: Product[] = [
     aisle: 'D2',
     stock: 20,
     expiryDate: '2026-06-20',
-    image: '🍓',
+    image: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=300&q=80',
   },
   {
     id: '6',
@@ -71,7 +71,7 @@ export const sampleProducts: Product[] = [
     aisle: 'B2',
     stock: 12,
     expiryDate: '2026-02-15',
-    image: '🧈',
+    image: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&w=300&q=80',
   },
   {
     id: '7',
@@ -82,7 +82,7 @@ export const sampleProducts: Product[] = [
     aisle: 'E1',
     stock: 2,
     expiryDate: '2026-01-12',
-    image: '🍊',
+    image: 'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?auto=format&fit=crop&w=300&q=80',
   },
   {
     id: '8',
@@ -93,7 +93,7 @@ export const sampleProducts: Product[] = [
     aisle: 'B3',
     stock: 30,
     expiryDate: '2026-01-20',
-    image: '🥚',
+    image: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=300&q=80',
   },
   {
     id: '9',
@@ -106,7 +106,7 @@ export const sampleProducts: Product[] = [
     aisle: 'F1',
     stock: 45,
     expiryDate: '2026-12-01',
-    image: '🍚',
+    image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=300&q=80',
   },
   {
     id: '10',
@@ -117,7 +117,7 @@ export const sampleProducts: Product[] = [
     aisle: 'B1',
     stock: 4,
     expiryDate: '2026-01-11',
-    image: '🥄',
+    image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=300&q=80',
   },
   {
     id: '11',
@@ -128,7 +128,7 @@ export const sampleProducts: Product[] = [
     aisle: 'G2',
     stock: 50,
     expiryDate: '2026-08-15',
-    image: '🍫',
+    image: 'https://images.unsplash.com/photo-1481391319762-47dff72954d9?auto=format&fit=crop&w=300&q=80',
   },
   {
     id: '12',
@@ -141,7 +141,7 @@ export const sampleProducts: Product[] = [
     aisle: 'D1',
     stock: 18,
     expiryDate: '2027-01-01',
-    image: '🫒',
+    image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=300&q=80',
   },
 ];
 
