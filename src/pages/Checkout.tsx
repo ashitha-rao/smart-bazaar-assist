@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Minus, Plus, Trash2, CreditCard, ArrowLeft, Sparkles, Phone, MessageCircle, Download } from 'lucide-react';
+import { Minus, Plus, Trash2, CreditCard, ArrowLeft, Sparkles, Mail, MessageCircle, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import confetti from 'canvas-confetti';
 import Navbar from '@/components/Navbar';
@@ -15,7 +15,7 @@ import { generateBillPDF, generateWhatsAppMessage } from '@/lib/generateBill';
 
 const Checkout = () => {
   const { items, updateQuantity, removeFromCart, totalPrice, clearCart } = useCart();
-  const { isAuthenticated, phoneNumber } = useAuth();
+  const { isAuthenticated, email } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
@@ -82,7 +82,7 @@ const Checkout = () => {
       subtotal: totalPrice,
       gst,
       total: finalTotal,
-      phoneNumber: phoneNumber || 'Guest',
+      email: email || 'Guest',
     });
   };
 
@@ -92,12 +92,11 @@ const Checkout = () => {
       subtotal: totalPrice,
       gst,
       total: finalTotal,
-      phoneNumber: phoneNumber || 'Guest',
+      email: email || 'Guest',
     });
     
-    // Extract just the number digits for WhatsApp
-    const cleanPhone = phoneNumber?.replace(/\D/g, '') || '';
-    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${message}`;
+    // Open WhatsApp with pre-filled message (user can select contact)
+    const whatsappUrl = `https://wa.me/?text=${message}`;
     window.open(whatsappUrl, '_blank');
   };
 
@@ -130,10 +129,10 @@ const Checkout = () => {
                 Thank you for shopping with Smart Bazaar
               </p>
               
-              {phoneNumber && (
+              {email && (
                 <p className="text-sm text-muted-foreground mb-8">
-                  <Phone className="w-4 h-4 inline mr-1" />
-                  Bill sent to: {phoneNumber}
+                  <Mail className="w-4 h-4 inline mr-1" />
+                  Bill sent to: {email}
                 </p>
               )}
 
@@ -175,7 +174,7 @@ const Checkout = () => {
                   </Button>
                 </motion.div>
                 
-                {phoneNumber && (
+                {email && (
                   <Button 
                     variant="outline" 
                     size="lg" 
@@ -419,11 +418,11 @@ const Checkout = () => {
                     <CardTitle>Order Summary</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {/* Verified Phone Display */}
-                    {isAuthenticated && phoneNumber && (
+                    {/* Verified Email Display */}
+                    {isAuthenticated && email && (
                       <div className="flex items-center gap-2 p-3 bg-primary/10 rounded-xl">
-                        <Phone className="w-4 h-4 text-primary" />
-                        <span className="text-sm text-foreground">{phoneNumber}</span>
+                        <Mail className="w-4 h-4 text-primary" />
+                        <span className="text-sm text-foreground truncate">{email}</span>
                         <Badge variant="secondary" className="ml-auto text-xs">Verified</Badge>
                       </div>
                     )}

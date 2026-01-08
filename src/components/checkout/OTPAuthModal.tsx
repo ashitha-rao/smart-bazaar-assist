@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Phone, Shield, ArrowRight, Loader2 } from 'lucide-react';
+import { X, Mail, Shield, ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface OTPAuthModalProps {
   isOpen: boolean;
@@ -14,34 +16,47 @@ interface OTPAuthModalProps {
 
 const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
   const { setAuthenticated } = useAuth();
-  const [step, setStep] = useState<'phone' | 'otp'>('phone');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [step, setStep] = useState<'email' | 'otp'>('email');
+  const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [generatedOtp, setGeneratedOtp] = useState('');
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleSendOtp = async () => {
-    if (phoneNumber.length !== 10) {
-      setError('Please enter a valid 10-digit phone number');
+    if (!validateEmail(email)) {
+      setError('Please enter a valid email address');
       return;
     }
 
     setIsLoading(true);
     setError('');
 
-    // Simulate OTP sending (in production, this would use Firebase)
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Generate a random 6-digit OTP for demo
-    const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
-    setGeneratedOtp(randomOtp);
-    
-    // Show OTP in console for demo purposes
-    console.log(`Demo OTP for +91 ${phoneNumber}: ${randomOtp}`);
-    
-    setIsLoading(false);
-    setStep('otp');
+    try {
+      const { error: signInError } = await supabase.auth.signInWithOtp({
+        email: email.trim(),
+        options: {
+          shouldCreateUser: true,
+        },
+      });
+
+      if (signInError) {
+        setError(signInError.message);
+        setIsLoading(false);
+        return;
+      }
+
+      toast.success('OTP sent to your email!');
+      setIsLoading(false);
+      setStep('otp');
+    } catch (err) {
+      setError('Failed to send OTP. Please try again.');
+      setIsLoading(false);
+    }
   };
 
   const handleVerifyOtp = async () => {
@@ -53,24 +68,35 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
     setIsLoading(true);
     setError('');
 
-    // Simulate OTP verification
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      const { data, error: verifyError } = await supabase.auth.verifyOtp({
+        email: email.trim(),
+        token: otp,
+        type: 'email',
+      });
 
-    // For demo, accept any 6-digit OTP or the generated one
-    if (otp === generatedOtp || otp.length === 6) {
-      setAuthenticated(`+91 ${phoneNumber}`);
-      setIsLoading(false);
-      onSuccess();
-      onClose();
-    } else {
+      if (verifyError) {
+        setError(verifyError.message);
+        setIsLoading(false);
+        return;
+      }
+
+      if (data.user) {
+        setAuthenticated(data.user.email || email);
+        toast.success('Verified successfully!');
+        setIsLoading(false);
+        onSuccess();
+        onClose();
+      }
+    } catch (err) {
       setError('Invalid OTP. Please try again.');
       setIsLoading(false);
     }
   };
 
   const handleClose = () => {
-    setStep('phone');
-    setPhoneNumber('');
+    setStep('email');
+    setEmail('');
     setOtp('');
     setError('');
     onClose();
@@ -104,7 +130,7 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
                 </Button>
               </CardHeader>
               <CardContent>
-                {step === 'phone' ? (
+                {step === 'email' ? (
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -112,34 +138,27 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
                   >
                     <div className="text-center mb-6">
                       <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Phone className="w-8 h-8 text-primary" />
+                        <Mail className="w-8 h-8 text-primary" />
                       </div>
                       <p className="text-muted-foreground">
-                        Enter your phone number to receive a one-time password
+                        Enter your email address to receive a one-time password
                       </p>
                     </div>
 
                     <div>
                       <label className="text-sm font-medium text-foreground mb-2 block">
-                        Phone Number
+                        Email Address
                       </label>
-                      <div className="flex gap-2">
-                        <div className="h-12 px-4 bg-secondary rounded-lg flex items-center text-muted-foreground font-medium">
-                          +91
-                        </div>
-                        <Input
-                          type="tel"
-                          maxLength={10}
-                          value={phoneNumber}
-                          onChange={(e) => {
-                            const value = e.target.value.replace(/\D/g, '');
-                            setPhoneNumber(value);
-                            setError('');
-                          }}
-                          placeholder="Enter 10-digit number"
-                          className="h-12 flex-1"
-                        />
-                      </div>
+                      <Input
+                        type="email"
+                        value={email}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                          setError('');
+                        }}
+                        placeholder="Enter your email"
+                        className="h-12"
+                      />
                     </div>
 
                     {error && (
@@ -151,7 +170,7 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
                       size="lg"
                       className="w-full"
                       onClick={handleSendOtp}
-                      disabled={isLoading || phoneNumber.length !== 10}
+                      disabled={isLoading || !validateEmail(email)}
                     >
                       {isLoading ? (
                         <>
@@ -183,7 +202,7 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
                       <p className="text-muted-foreground">
                         Enter the 6-digit OTP sent to
                       </p>
-                      <p className="font-semibold text-foreground">+91 {phoneNumber}</p>
+                      <p className="font-semibold text-foreground">{email}</p>
                     </div>
 
                     <div>
@@ -208,10 +227,9 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
                       <p className="text-sm text-destructive">{error}</p>
                     )}
 
-                    <div className="bg-secondary/50 rounded-lg p-3 text-sm text-muted-foreground">
-                      <p className="font-medium text-foreground mb-1">Demo Mode:</p>
-                      <p>Check browser console for OTP, or enter any 6 digits to proceed.</p>
-                    </div>
+                    <p className="text-sm text-muted-foreground text-center">
+                      Check your email inbox for the OTP code
+                    </p>
 
                     <Button
                       variant="hero"
@@ -234,12 +252,12 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
                       variant="ghost"
                       className="w-full"
                       onClick={() => {
-                        setStep('phone');
+                        setStep('email');
                         setOtp('');
                         setError('');
                       }}
                     >
-                      Change Phone Number
+                      Change Email
                     </Button>
                   </motion.div>
                 )}
