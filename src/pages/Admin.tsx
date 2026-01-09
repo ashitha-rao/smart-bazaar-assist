@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useProducts } from '@/context/ProductContext';
+import { useLanguage } from '@/context/LanguageContext';
 import ProductFormModal from '@/components/admin/ProductFormModal';
 import ProductManagement from '@/components/admin/ProductManagement';
 import { Product } from '@/context/CartContext';
@@ -20,6 +21,7 @@ const Admin = () => {
   const [showAddModal, setShowAddModal] = useState(false);
 
   const { products, addProduct } = useProducts();
+  const { t } = useLanguage();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +29,7 @@ const Admin = () => {
       setIsAuthenticated(true);
       setError('');
     } else {
-      setError('Invalid credentials. Please try again.');
+      setError(t.invalidCredentials);
     }
   };
 
@@ -67,13 +69,13 @@ const Admin = () => {
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Lock className="w-8 h-8 text-primary" />
                 </div>
-                <CardTitle>Admin Login</CardTitle>
+                <CardTitle>{t.adminLogin}</CardTitle>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div>
                     <label className="text-sm font-medium text-foreground mb-2 block">
-                      Email
+                      {t.email}
                     </label>
                     <Input
                       type="email"
@@ -85,7 +87,7 @@ const Admin = () => {
                   </div>
                   <div>
                     <label className="text-sm font-medium text-foreground mb-2 block">
-                      Password
+                      {t.password}
                     </label>
                     <Input
                       type="password"
@@ -99,7 +101,7 @@ const Admin = () => {
                     <p className="text-sm text-destructive">{error}</p>
                   )}
                   <Button type="submit" variant="hero" className="w-full" size="lg">
-                    Sign In
+                    {t.signIn}
                   </Button>
                 </form>
               </CardContent>
@@ -123,15 +125,15 @@ const Admin = () => {
           >
             <div>
               <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-2">
-                Admin Dashboard
+                {t.adminDashboard}
               </h1>
               <p className="text-muted-foreground">
-                Manage your Smart Bazaar inventory and customers
+                {t.manageInventory}
               </p>
             </div>
             <Button variant="hero" size="lg" onClick={() => setShowAddModal(true)}>
               <Plus className="w-5 h-5 mr-2" />
-              Add Product
+              {t.addProduct}
             </Button>
           </motion.div>
 
@@ -143,10 +145,10 @@ const Admin = () => {
             className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
           >
             {[
-              { icon: Package, label: 'Total Products', value: products.length, color: 'bg-primary' },
-              { icon: AlertTriangle, label: 'Low Stock', value: lowStockProducts.length, color: 'bg-destructive' },
-              { icon: Clock, label: 'Near Expiry', value: nearExpiryProducts.length, color: 'bg-warning' },
-              { icon: Users, label: 'Customers Today', value: customerInsights.length, color: 'bg-bazaar-lavender' },
+              { icon: Package, label: t.totalProducts, value: products.length, color: 'bg-primary' },
+              { icon: AlertTriangle, label: t.lowStock, value: lowStockProducts.length, color: 'bg-destructive' },
+              { icon: Clock, label: t.nearExpiry, value: nearExpiryProducts.length, color: 'bg-warning' },
+              { icon: Users, label: t.customersToday, value: customerInsights.length, color: 'bg-bazaar-lavender' },
             ].map((stat, index) => (
               <Card key={stat.label} variant="default">
                 <CardContent className="p-4 flex items-center gap-4">
@@ -173,13 +175,13 @@ const Admin = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-destructive">
                     <AlertTriangle className="w-5 h-5" />
-                    Low Stock Alert
+                    {t.lowStockAlert}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {lowStockProducts.length === 0 ? (
                     <p className="text-muted-foreground text-center py-4">
-                      All products are well stocked!
+                      {t.allProductsWellStocked}
                     </p>
                   ) : (
                     <div className="space-y-3">
@@ -189,14 +191,20 @@ const Admin = () => {
                           className="flex items-center justify-between p-3 bg-destructive/10 rounded-xl"
                         >
                           <div className="flex items-center gap-3">
-                            <span className="text-2xl">{product.image}</span>
+                            <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center bg-secondary">
+                              {product.image.startsWith('http') ? (
+                                <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <span className="text-2xl">{product.image}</span>
+                              )}
+                            </div>
                             <div>
                               <p className="font-medium text-foreground">{product.name}</p>
                               <p className="text-sm text-muted-foreground">{product.brand}</p>
                             </div>
                           </div>
                           <Badge variant="destructive">
-                            {product.stock} left
+                            {product.stock} {t.left}
                           </Badge>
                         </div>
                       ))}
@@ -216,13 +224,13 @@ const Admin = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-warning">
                     <Clock className="w-5 h-5" />
-                    Near Expiry Items
+                    {t.nearExpiryItems}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {nearExpiryProducts.length === 0 ? (
                     <p className="text-muted-foreground text-center py-4">
-                      No products near expiry!
+                      {t.noProductsNearExpiry}
                     </p>
                   ) : (
                     <div className="space-y-3">
@@ -236,16 +244,22 @@ const Admin = () => {
                             className="flex items-center justify-between p-3 bg-warning/10 rounded-xl"
                           >
                             <div className="flex items-center gap-3">
-                              <span className="text-2xl">{product.image}</span>
+                              <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center bg-secondary">
+                                {product.image.startsWith('http') ? (
+                                  <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <span className="text-2xl">{product.image}</span>
+                                )}
+                              </div>
                               <div>
                                 <p className="font-medium text-foreground">{product.name}</p>
                                 <p className="text-sm text-muted-foreground">
-                                  Expires: {product.expiryDate}
+                                  {t.expires} {product.expiryDate}
                                 </p>
                               </div>
                             </div>
                             <Badge className="bg-warning text-warning-foreground">
-                              {daysLeft} days
+                              {daysLeft} {t.days}
                             </Badge>
                           </div>
                         );
@@ -268,16 +282,16 @@ const Admin = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-primary" />
-                  Customer Insights (Today)
+                  {t.customerInsights} ({t.today})
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Phone Number</TableHead>
-                      <TableHead>Time</TableHead>
-                      <TableHead className="text-right">Total Spend</TableHead>
+                      <TableHead>{t.phoneNumber}</TableHead>
+                      <TableHead>{t.time}</TableHead>
+                      <TableHead className="text-right">{t.totalSpend}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -312,7 +326,7 @@ const Admin = () => {
               variant="outline"
               onClick={() => setIsAuthenticated(false)}
             >
-              Sign Out
+              {t.signOut}
             </Button>
           </div>
         </div>

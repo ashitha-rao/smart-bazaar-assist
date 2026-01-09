@@ -6,6 +6,7 @@ import confetti from 'canvas-confetti';
 import Navbar from '@/components/Navbar';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +17,7 @@ import { generateBillPDF, generateWhatsAppMessage } from '@/lib/generateBill';
 const Checkout = () => {
   const { items, updateQuantity, removeFromCart, totalPrice, clearCart } = useCart();
   const { isAuthenticated, email } = useAuth();
+  const { t } = useLanguage();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
@@ -123,22 +125,22 @@ const Checkout = () => {
 
               <div className="text-8xl mb-6">✅</div>
               <h1 className="font-display text-3xl font-bold text-foreground mb-4">
-                Payment Successful!
+                {t.paymentSuccessful}
               </h1>
               <p className="text-muted-foreground mb-4">
-                Thank you for shopping with Smart Bazaar
+                {t.thankYouShopping}
               </p>
               
               {email && (
                 <p className="text-sm text-muted-foreground mb-8">
                   <Mail className="w-4 h-4 inline mr-1" />
-                  Bill sent to: {email}
+                  {t.billSentTo} {email}
                 </p>
               )}
 
               <Card variant="elevated" className="mb-8">
                 <CardContent className="p-6">
-                  <h3 className="font-semibold text-foreground mb-4">Order Summary</h3>
+                  <h3 className="font-semibold text-foreground mb-4">{t.orderSummary}</h3>
                   <div className="space-y-2 text-sm">
                     {items.map(item => (
                       <div key={item.id} className="flex justify-between">
@@ -148,15 +150,15 @@ const Checkout = () => {
                     ))}
                     <div className="h-px bg-border my-3" />
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Subtotal</span>
+                      <span className="text-muted-foreground">{t.subtotal}</span>
                       <span className="text-foreground">Rs. {totalPrice.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">GST (5%)</span>
+                      <span className="text-muted-foreground">{t.gst}</span>
                       <span className="text-foreground">Rs. {gst.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between font-bold text-lg pt-2">
-                      <span className="text-foreground">Total</span>
+                      <span className="text-foreground">{t.total}</span>
                       <span className="text-primary">Rs. {finalTotal.toFixed(2)}</span>
                     </div>
                   </div>
@@ -170,7 +172,7 @@ const Checkout = () => {
                 >
                   <Button variant="hero" size="lg" className="w-full" onClick={handleDownloadBill}>
                     <Download className="w-5 h-5 mr-2" />
-                    Download Bill (PDF)
+                    {t.downloadBill}
                   </Button>
                 </motion.div>
                 
@@ -182,7 +184,7 @@ const Checkout = () => {
                     onClick={handleShareWhatsApp}
                   >
                     <MessageCircle className="w-5 h-5 mr-2" />
-                    Share Bill via WhatsApp
+                    {t.shareViaWhatsApp}
                   </Button>
                 )}
                 
@@ -192,7 +194,7 @@ const Checkout = () => {
                     setIsComplete(false);
                     setIsProcessing(false);
                   }}>
-                    Continue Shopping
+                    {t.continueShopping}
                   </Button>
                 </Link>
               </div>
@@ -239,7 +241,7 @@ const Checkout = () => {
                   <span className="font-mono text-primary text-sm">|||||||||||||||</span>
                 </div>
               </div>
-              <p className="text-primary-foreground font-medium">Scanning items...</p>
+              <p className="text-primary-foreground font-medium">{t.scanningItems}</p>
 
               {/* Falling Coins */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -281,10 +283,10 @@ const Checkout = () => {
           >
             <Link to="/products" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-4">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Continue Shopping
+              {t.continueShopping}
             </Link>
             <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground">
-              Your Cart
+              {t.yourCart}
             </h1>
           </motion.div>
 
@@ -296,14 +298,14 @@ const Checkout = () => {
             >
               <span className="text-8xl mb-6 block">🛒</span>
               <h2 className="font-display text-2xl font-semibold text-foreground mb-4">
-                Your cart is empty
+                {t.cartIsEmpty}
               </h2>
               <p className="text-muted-foreground mb-8">
-                Start adding some delicious items!
+                {t.startAddingItems}
               </p>
               <Link to="/products">
                 <Button variant="hero" size="lg">
-                  Browse Products
+                  {t.browseProductsBtn}
                 </Button>
               </Link>
             </motion.div>
@@ -324,8 +326,12 @@ const Checkout = () => {
                         <CardContent className="p-4">
                           <div className="flex items-center gap-4">
                             {/* Product Image */}
-                            <div className="w-16 h-16 bg-secondary rounded-xl flex items-center justify-center text-3xl flex-shrink-0">
-                              {item.image}
+                            <div className="w-16 h-16 bg-secondary rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0">
+                              {item.image.startsWith('http') ? (
+                                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <span className="text-3xl">{item.image}</span>
+                              )}
                             </div>
 
                             {/* Details */}
@@ -391,13 +397,19 @@ const Checkout = () => {
                     <div className="flex items-center gap-2 mb-4">
                       <Sparkles className="w-5 h-5 text-primary" />
                       <h3 className="font-display font-semibold text-foreground">
-                        Frequently Bought Together
+                        {t.frequentlyBoughtTogether}
                       </h3>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                       {recommendations.map((product) => (
                         <Card key={product.id} variant="product" className="p-3">
-                          <div className="text-3xl text-center mb-2">{product.image}</div>
+                          <div className="h-12 flex items-center justify-center mb-2 overflow-hidden rounded">
+                            {product.image.startsWith('http') ? (
+                              <img src={product.image} alt={product.name} className="h-full object-contain" />
+                            ) : (
+                              <span className="text-3xl">{product.image}</span>
+                            )}
+                          </div>
                           <p className="text-sm font-medium text-foreground truncate">
                             {product.name}
                           </p>
@@ -415,7 +427,7 @@ const Checkout = () => {
               <div className="lg:col-span-1">
                 <Card variant="elevated" className="sticky top-24">
                   <CardHeader>
-                    <CardTitle>Order Summary</CardTitle>
+                    <CardTitle>{t.orderSummary}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {/* Verified Email Display */}
@@ -423,21 +435,21 @@ const Checkout = () => {
                       <div className="flex items-center gap-2 p-3 bg-primary/10 rounded-xl">
                         <Mail className="w-4 h-4 text-primary" />
                         <span className="text-sm text-foreground truncate">{email}</span>
-                        <Badge variant="secondary" className="ml-auto text-xs">Verified</Badge>
+                        <Badge variant="secondary" className="ml-auto text-xs">{t.verified}</Badge>
                       </div>
                     )}
                     
                     <div className="flex justify-between text-muted-foreground">
-                      <span>Subtotal ({items.length} items)</span>
+                      <span>{t.subtotal} ({items.length} {t.items})</span>
                       <span>Rs. {totalPrice.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-muted-foreground">
-                      <span>GST (5%)</span>
+                      <span>{t.gst}</span>
                       <span>Rs. {gst.toFixed(2)}</span>
                     </div>
                     <div className="h-px bg-border" />
                     <div className="flex justify-between font-bold text-lg text-foreground">
-                      <span>Total</span>
+                      <span>{t.total}</span>
                       <span>Rs. {finalTotal.toFixed(2)}</span>
                     </div>
 
@@ -449,18 +461,8 @@ const Checkout = () => {
                       disabled={isProcessing}
                     >
                       <CreditCard className="w-5 h-5 mr-2" />
-                      {isProcessing ? 'Processing...' : isAuthenticated ? 'Pay Now' : 'Verify & Pay'}
+                      {isProcessing ? 'Processing...' : isAuthenticated ? t.payNow : 'Verify & Pay'}
                     </Button>
-
-                    {!isAuthenticated && (
-                      <p className="text-xs text-muted-foreground text-center">
-                        Phone verification required before payment
-                      </p>
-                    )}
-                    
-                    <p className="text-xs text-muted-foreground text-center">
-                      Secure payment powered by Smart Bazaar
-                    </p>
                   </CardContent>
                 </Card>
               </div>

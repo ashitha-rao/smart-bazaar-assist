@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useProducts } from '@/context/ProductContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { Product } from '@/context/CartContext';
 import ProductFormModal from './ProductFormModal';
 import {
@@ -20,6 +21,7 @@ import {
 
 const ProductManagement = () => {
   const { products, updateProduct, deleteProduct } = useProducts();
+  const { t } = useLanguage();
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
@@ -46,7 +48,7 @@ const ProductManagement = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Package className="w-5 h-5 text-primary" />
-            Product Management
+            {t.productManagement}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -69,7 +71,13 @@ const ProductManagement = () => {
                   }`}
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <span className="text-2xl flex-shrink-0">{product.image}</span>
+                    <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center bg-secondary flex-shrink-0">
+                      {product.image.startsWith('http') ? (
+                        <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-2xl">{product.image}</span>
+                      )}
+                    </div>
                     <div className="min-w-0 flex-1">
                       <p className="font-medium text-foreground truncate">{product.name}</p>
                       <div className="flex items-center gap-2 flex-wrap">
@@ -82,7 +90,7 @@ const ProductManagement = () => {
 
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <Badge variant={isLowStock ? 'destructive' : 'secondary'}>
-                      {product.stock} in stock
+                      {product.stock} {t.inStock}
                     </Badge>
                     <Button
                       variant="ghost"
@@ -118,15 +126,15 @@ const ProductManagement = () => {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Product</AlertDialogTitle>
+            <AlertDialogTitle>{t.deleteProduct}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this product? This action cannot be undone.
+              {t.deleteConfirmation}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t.cancel}</AlertDialogCancel>
             <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">
-              Delete
+              {t.delete}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

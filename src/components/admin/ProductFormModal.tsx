@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Product } from '@/context/CartContext';
 import { categories } from '@/data/products';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface ProductFormModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ interface ProductFormModalProps {
 const emojiOptions = ['🍞', '🥛', '🍎', '🥦', '🍓', '🧈', '🍊', '🥚', '🍚', '🥄', '🍫', '🫒', '🥕', '🍇', '🧀', '🥩', '🍗', '🐟', '🍜', '☕'];
 
 const ProductFormModal = ({ isOpen, onClose, onSubmit, editProduct }: ProductFormModalProps) => {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: '',
     brand: '',
@@ -82,6 +84,23 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, editProduct }: ProductFor
 
   const availableCategories = categories.filter(c => c !== 'All');
 
+  // Map categories to translated names
+  const getCategoryLabel = (category: string): string => {
+    const categoryMap: Record<string, keyof typeof t> = {
+      'Bakery': 'bakery',
+      'Dairy': 'dairy',
+      'Fruits': 'fruits',
+      'Vegetables': 'vegetables',
+      'Spreads': 'spreads',
+      'Beverages': 'beverages',
+      'Grains': 'grains',
+      'Snacks': 'snacks',
+      'Cooking': 'cooking',
+    };
+    const key = categoryMap[category];
+    return key ? t[key] : category;
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -101,7 +120,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, editProduct }: ProductFor
           >
             <Card variant="elevated">
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>{editProduct ? 'Edit Product' : 'Add New Product'}</CardTitle>
+                <CardTitle>{editProduct ? t.editProduct : t.addNewProduct}</CardTitle>
                 <Button variant="ghost" size="icon" onClick={onClose}>
                   <X className="w-5 h-5" />
                 </Button>
@@ -109,7 +128,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, editProduct }: ProductFor
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Product Name *</label>
+                    <label className="text-sm font-medium text-foreground mb-2 block">{t.productName} *</label>
                     <Input
                       required
                       value={formData.name}
@@ -119,7 +138,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, editProduct }: ProductFor
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Brand *</label>
+                    <label className="text-sm font-medium text-foreground mb-2 block">{t.brand} *</label>
                     <Input
                       required
                       value={formData.brand}
@@ -130,7 +149,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, editProduct }: ProductFor
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium text-foreground mb-2 block">Price (Rs.) *</label>
+                      <label className="text-sm font-medium text-foreground mb-2 block">{t.price} *</label>
                       <Input
                         required
                         type="number"
@@ -141,7 +160,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, editProduct }: ProductFor
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-foreground mb-2 block">Original Price</label>
+                      <label className="text-sm font-medium text-foreground mb-2 block">{t.originalPrice}</label>
                       <Input
                         type="number"
                         min="0"
@@ -154,7 +173,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, editProduct }: ProductFor
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium text-foreground mb-2 block">Stock Quantity *</label>
+                      <label className="text-sm font-medium text-foreground mb-2 block">{t.stockQuantity} *</label>
                       <Input
                         required
                         type="number"
@@ -165,7 +184,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, editProduct }: ProductFor
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-foreground mb-2 block">Offer Tag</label>
+                      <label className="text-sm font-medium text-foreground mb-2 block">{t.offerTag}</label>
                       <Input
                         value={formData.offer}
                         onChange={(e) => setFormData({ ...formData, offer: e.target.value })}
@@ -176,7 +195,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, editProduct }: ProductFor
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium text-foreground mb-2 block">Category *</label>
+                      <label className="text-sm font-medium text-foreground mb-2 block">{t.category} *</label>
                       <select
                         required
                         value={formData.category}
@@ -184,12 +203,12 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, editProduct }: ProductFor
                         className="w-full h-10 px-3 rounded-md border border-input bg-background text-foreground"
                       >
                         {availableCategories.map((cat) => (
-                          <option key={cat} value={cat}>{cat}</option>
+                          <option key={cat} value={cat}>{getCategoryLabel(cat)}</option>
                         ))}
                       </select>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-foreground mb-2 block">Aisle *</label>
+                      <label className="text-sm font-medium text-foreground mb-2 block">{t.aisle} *</label>
                       <Input
                         required
                         value={formData.aisle}
@@ -200,7 +219,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, editProduct }: ProductFor
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Expiry Date *</label>
+                    <label className="text-sm font-medium text-foreground mb-2 block">{t.expiryDate} *</label>
                     <Input
                       required
                       type="date"
@@ -210,7 +229,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, editProduct }: ProductFor
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Product Image *</label>
+                    <label className="text-sm font-medium text-foreground mb-2 block">{t.productImage} *</label>
                     <div className="flex flex-wrap gap-2">
                       {emojiOptions.map((emoji) => (
                         <button
@@ -230,7 +249,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, editProduct }: ProductFor
                   </div>
 
                   <Button type="submit" variant="hero" className="w-full" size="lg">
-                    {editProduct ? 'Update Product' : 'Add Product'}
+                    {editProduct ? t.updateProduct : t.addProduct}
                   </Button>
                 </form>
               </CardContent>

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -16,6 +17,7 @@ interface OTPAuthModalProps {
 
 const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
   const { setAuthenticated } = useAuth();
+  const { t } = useLanguage();
   const [step, setStep] = useState<'email' | 'otp'>('email');
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
@@ -123,7 +125,7 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="w-5 h-5 text-primary" />
-                  Verify to Continue
+                  {t.verifyToContinue}
                 </CardTitle>
                 <Button variant="ghost" size="icon" onClick={handleClose}>
                   <X className="w-5 h-5" />
@@ -141,13 +143,13 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
                         <Mail className="w-8 h-8 text-primary" />
                       </div>
                       <p className="text-muted-foreground">
-                        Enter your email address to receive a one-time password
+                        {t.enterEmailToReceiveOTP}
                       </p>
                     </div>
 
                     <div>
                       <label className="text-sm font-medium text-foreground mb-2 block">
-                        Email Address
+                        {t.emailAddress}
                       </label>
                       <Input
                         type="email"
@@ -156,7 +158,7 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
                           setEmail(e.target.value);
                           setError('');
                         }}
-                        placeholder="Enter your email"
+                        placeholder={t.enterYourEmail}
                         className="h-12"
                       />
                     </div>
@@ -175,18 +177,18 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
                       {isLoading ? (
                         <>
                           <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                          Sending OTP...
+                          {t.sendingOTP}
                         </>
                       ) : (
                         <>
-                          Send OTP
+                          {t.sendOTP}
                           <ArrowRight className="w-5 h-5 ml-2" />
                         </>
                       )}
                     </Button>
 
                     <p className="text-xs text-center text-muted-foreground">
-                      By continuing, you agree to our Terms of Service
+                      {t.termsOfService}
                     </p>
                   </motion.div>
                 ) : (
@@ -200,14 +202,14 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
                         <Shield className="w-8 h-8 text-primary" />
                       </div>
                       <p className="text-muted-foreground">
-                        Enter the 6-digit OTP sent to
+                        {t.enterOTPSentTo}
                       </p>
                       <p className="font-semibold text-foreground">{email}</p>
                     </div>
 
                     <div>
                       <label className="text-sm font-medium text-foreground mb-2 block">
-                        Enter OTP
+                        {t.enterOTP}
                       </label>
                       <Input
                         type="text"
@@ -218,7 +220,7 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
                           setOtp(value);
                           setError('');
                         }}
-                        placeholder="Enter 6-digit OTP"
+                        placeholder={t.enterSixDigitOTP}
                         className="h-12 text-center text-2xl tracking-widest"
                       />
                     </div>
@@ -228,7 +230,7 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
                     )}
 
                     <p className="text-sm text-muted-foreground text-center">
-                      Check your email inbox for the OTP code
+                      {t.checkEmailForOTP}
                     </p>
 
                     <Button
@@ -241,10 +243,10 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
                       {isLoading ? (
                         <>
                           <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                          Verifying...
+                          {t.verifying}
                         </>
                       ) : (
-                        'Verify & Continue'
+                        t.verifyAndContinue
                       )}
                     </Button>
 
@@ -257,7 +259,7 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
                         setError('');
                       }}
                     >
-                      Change Email
+                      {t.changeEmail}
                     </Button>
                   </motion.div>
                 )}
