@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface AisleMapProps {
   isOpen: boolean;
@@ -26,25 +27,31 @@ const aislePositions: Record<string, { row: number; col: number }> = {
   'G2': { row: 6, col: 1 },
 };
 
-const aisleLabels: Record<string, string> = {
-  'A1': 'Bakery',
-  'A2': 'Pastries',
-  'B1': 'Yogurt',
-  'B2': 'Milk & Butter',
-  'B3': 'Eggs',
-  'C1': 'Vegetables',
-  'C2': 'Salads',
-  'C3': 'Fruits',
-  'D1': 'Oils',
-  'D2': 'Spreads',
-  'E1': 'Beverages',
-  'F1': 'Grains & Rice',
-  'G1': 'Chips',
-  'G2': 'Chocolates',
-};
-
 const AisleMap = ({ isOpen, onClose, aisle, productName }: AisleMapProps) => {
+  const { t } = useLanguage();
   const targetPosition = aislePositions[aisle] || { row: 0, col: 0 };
+
+  // Get translated aisle labels
+  const getAisleLabel = (aisleId: string): string => {
+    const aisleLabelsMap: Record<string, keyof typeof t> = {
+      'A1': 'bakery',
+      'A2': 'bakery',
+      'B1': 'dairy',
+      'B2': 'dairy',
+      'B3': 'dairy',
+      'C1': 'vegetables',
+      'C2': 'vegetables',
+      'C3': 'fruits',
+      'D1': 'cooking',
+      'D2': 'spreads',
+      'E1': 'beverages',
+      'F1': 'grains',
+      'G1': 'snacks',
+      'G2': 'snacks',
+    };
+    const key = aisleLabelsMap[aisleId];
+    return key ? t[key] : aisleId;
+  };
 
   return (
     <AnimatePresence>
@@ -66,9 +73,9 @@ const AisleMap = ({ isOpen, onClose, aisle, productName }: AisleMapProps) => {
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="font-display font-bold text-xl text-foreground">Store Map</h3>
+                <h3 className="font-display font-bold text-xl text-foreground">{t.storeMap}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Finding: {productName}
+                  {t.finding} {productName}
                 </p>
               </div>
               <Button variant="ghost" size="icon" onClick={onClose}>
@@ -81,7 +88,7 @@ const AisleMap = ({ isOpen, onClose, aisle, productName }: AisleMapProps) => {
               {/* Entrance */}
               <div className="text-center mb-4">
                 <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                  🚪 Entrance
+                  🚪 {t.entrance}
                 </span>
               </div>
 
@@ -111,7 +118,7 @@ const AisleMap = ({ isOpen, onClose, aisle, productName }: AisleMapProps) => {
                       )}
                       <div className="font-bold">{aisleId}</div>
                       <div className="text-[10px] mt-1 opacity-75">
-                        {aisleLabels[aisleId]}
+                        {getAisleLabel(aisleId)}
                       </div>
                     </motion.div>
                   );
@@ -121,7 +128,7 @@ const AisleMap = ({ isOpen, onClose, aisle, productName }: AisleMapProps) => {
               {/* Checkout */}
               <div className="text-center mt-4">
                 <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                  💳 Checkout
+                  💳 {t.checkout}
                 </span>
               </div>
             </div>
@@ -130,11 +137,11 @@ const AisleMap = ({ isOpen, onClose, aisle, productName }: AisleMapProps) => {
             <div className="flex items-center justify-center gap-4 text-sm">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded bg-primary"></div>
-                <span className="text-muted-foreground">Your Item</span>
+                <span className="text-muted-foreground">{t.yourItem}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded bg-card border"></div>
-                <span className="text-muted-foreground">Other Aisles</span>
+                <span className="text-muted-foreground">{t.otherAisles}</span>
               </div>
             </div>
           </motion.div>

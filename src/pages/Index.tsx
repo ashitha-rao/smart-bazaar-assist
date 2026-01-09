@@ -4,23 +4,28 @@ import { ArrowRight, Zap, Clock, ShoppingBag, Mic, Camera } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useLanguage } from '@/context/LanguageContext';
+
 const Index = () => {
+  const { t } = useLanguage();
+
   const features = [{
     icon: Zap,
-    title: 'No Queues',
-    description: 'Skip the long checkout lines with our smart self-checkout system.',
+    titleKey: 'noQueues' as const,
+    descKey: 'noQueuesDesc' as const,
     color: 'from-bazaar-mint to-primary'
   }, {
     icon: Clock,
-    title: 'Faster Checkout',
-    description: 'Scan, pay, and go in under 60 seconds with mobile payments.',
+    titleKey: 'fasterCheckout' as const,
+    descKey: 'fasterCheckoutDesc' as const,
     color: 'from-bazaar-peach to-bazaar-coral'
   }, {
     icon: ShoppingBag,
-    title: 'Smart Cart',
-    description: 'Real-time price tracking and smart recommendations as you shop.',
+    titleKey: 'smartCart' as const,
+    descKey: 'smartCartDesc' as const,
     color: 'from-bazaar-lavender to-accent-foreground'
   }];
+
   return <div className="min-h-screen bg-background relative overflow-hidden">
       <Navbar />
       
@@ -58,35 +63,34 @@ const Index = () => {
             delay: 0.2
           }} className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-full mb-6">
               <span className="text-sm font-medium text-white">
-                The Future of Grocery Shopping
+                {t.theFutureOfGroceryShopping}
               </span>
             </motion.div>
 
             {/* Headline */}
             <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-              Welcome to{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-bazaar-mint to-primary">Smart Bazaar</span>
+              {t.welcomeTo}{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-bazaar-mint to-primary">{t.smartBazaar}</span>
               <br />
-              Assistant
+              {t.assistant}
             </h1>
 
             {/* Subheadline */}
             <p className="text-lg sm:text-xl text-white/80 max-w-xl mb-10">
-              Experience seamless grocery shopping with AI-powered search, 
-              smart recommendations, and lightning-fast checkout.
+              {t.heroSubheadline}
             </p>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/products">
                 <Button variant="hero" size="xl">
-                  Start Shopping
+                  {t.startShopping}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
               <Button variant="outline" size="xl" className="border-white/30 text-white hover:bg-white/10 hover:text-white">
                 <Mic className="w-5 h-5 mr-2" />
-                Voice Search
+                {t.voiceSearch}
               </Button>
             </div>
 
@@ -100,12 +104,12 @@ const Index = () => {
           }} className="mt-8 flex items-center gap-6 text-sm text-white/60">
               <div className="flex items-center gap-2">
                 <Mic className="w-4 h-4 text-primary" />
-                <span>Voice Search</span>
+                <span>{t.voiceSearch}</span>
               </div>
               <div className="w-1 h-1 rounded-full bg-white/60" />
               <div className="flex items-center gap-2">
                 <Camera className="w-4 h-4 text-primary" />
-                <span>Image Search</span>
+                <span>{t.imageSearch}</span>
               </div>
             </motion.div>
           </motion.div>
@@ -127,15 +131,15 @@ const Index = () => {
           duration: 0.6
         }} className="text-center mb-16">
             <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-4">
-              Why Choose Smart Bazaar?
+              {t.whyChooseSmartBazaar}
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              Revolutionizing your grocery experience with cutting-edge technology
+              {t.revolutionizingExperience}
             </p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {features.map((feature, index) => <motion.div key={feature.title} initial={{
+            {features.map((feature, index) => <motion.div key={feature.titleKey} initial={{
             opacity: 0,
             y: 20
           }} whileInView={{
@@ -156,10 +160,10 @@ const Index = () => {
 
                     {/* Content */}
                     <h3 className="font-display text-xl font-bold text-foreground mb-3">
-                      {feature.title}
+                      {t[feature.titleKey]}
                     </h3>
                     <p className="text-muted-foreground">
-                      {feature.description}
+                      {t[feature.descKey]}
                     </p>
                   </CardContent>
                 </Card>
@@ -174,17 +178,17 @@ const Index = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[{
             value: '500+',
-            label: 'Products'
+            labelKey: 'productsCount' as const
           }, {
             value: '60s',
-            label: 'Avg Checkout'
+            labelKey: 'avgCheckout' as const
           }, {
             value: '99%',
-            label: 'Satisfaction'
+            labelKey: 'satisfaction' as const
           }, {
             value: '24/7',
-            label: 'Support'
-          }].map((stat, index) => <motion.div key={stat.label} initial={{
+            labelKey: 'support' as const
+          }].map((stat, index) => <motion.div key={stat.labelKey} initial={{
             opacity: 0,
             scale: 0.9
           }} whileInView={{
@@ -198,7 +202,7 @@ const Index = () => {
                 <div className="font-display text-3xl sm:text-4xl font-bold text-primary mb-2">
                   {stat.value}
                 </div>
-                <div className="text-sm text-muted-foreground">{stat.label}</div>
+                <div className="text-sm text-muted-foreground">{t[stat.labelKey]}</div>
               </motion.div>)}
           </div>
         </div>
@@ -207,7 +211,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="py-8 px-4 border-t border-border">
         <div className="container mx-auto max-w-6xl text-center">
-          <p className="text-sm text-muted-foreground">© 2026 Smart Bazaar Assistant. </p>
+          <p className="text-sm text-muted-foreground">{t.copyright}</p>
         </div>
       </footer>
     </div>;

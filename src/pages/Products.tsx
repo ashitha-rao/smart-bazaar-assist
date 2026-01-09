@@ -9,9 +9,11 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useProducts } from '@/context/ProductContext';
 import { categories } from '@/data/products';
+import { useLanguage } from '@/context/LanguageContext';
 
 const Products = () => {
   const { products } = useProducts();
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [isListening, setIsListening] = useState(false);
@@ -44,6 +46,24 @@ const Products = () => {
     }
   };
 
+  // Map categories to translated names
+  const getCategoryLabel = (category: string): string => {
+    const categoryMap: Record<string, keyof typeof t> = {
+      'All': 'all',
+      'Bakery': 'bakery',
+      'Dairy': 'dairy',
+      'Fruits': 'fruits',
+      'Vegetables': 'vegetables',
+      'Spreads': 'spreads',
+      'Beverages': 'beverages',
+      'Grains': 'grains',
+      'Snacks': 'snacks',
+      'Cooking': 'cooking',
+    };
+    const key = categoryMap[category];
+    return key ? t[key] : category;
+  };
+
   return (
     <div className="min-h-screen bg-background relative">
       <FloatingEmojis />
@@ -58,10 +78,10 @@ const Products = () => {
             className="mb-8"
           >
             <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-2">
-              Browse Products
+              {t.browseProducts}
             </h1>
             <p className="text-muted-foreground">
-              {filteredProducts.length} products available
+              {filteredProducts.length} {t.productsAvailable}
             </p>
           </motion.div>
 
@@ -78,7 +98,7 @@ const Products = () => {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   type="text"
-                  placeholder="Search for products..."
+                  placeholder={t.searchForProducts}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-12 h-12 rounded-xl bg-card border-border/50 text-foreground"
@@ -111,7 +131,7 @@ const Products = () => {
                   }`}
                   onClick={() => setSelectedCategory(category)}
                 >
-                  {category}
+                  {getCategoryLabel(category)}
                 </Badge>
               ))}
             </div>
@@ -145,10 +165,10 @@ const Products = () => {
             >
               <span className="text-6xl mb-4 block">🔍</span>
               <h3 className="font-display text-xl font-semibold text-foreground mb-2">
-                No products found
+                {t.noProductsFound}
               </h3>
               <p className="text-muted-foreground">
-                Try adjusting your search or filter criteria
+                {t.tryAdjusting}
               </p>
             </motion.div>
           )}
