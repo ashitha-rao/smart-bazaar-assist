@@ -116,6 +116,7 @@ interface Translations {
   category: string;
   expiryDate: string;
   productImage: string;
+  imageUrl: string;
   updateProduct: string;
   
   // Aisle Map
@@ -271,6 +272,7 @@ const translations: Record<Language, Translations> = {
     category: 'Category',
     expiryDate: 'Expiry Date',
     productImage: 'Product Image',
+    imageUrl: 'Image URL',
     updateProduct: 'Update Product',
     
     // Aisle Map
@@ -424,6 +426,7 @@ const translations: Record<Language, Translations> = {
     category: 'ವರ್ಗ',
     expiryDate: 'ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ',
     productImage: 'ಉತ್ಪನ್ನ ಚಿತ್ರ',
+    imageUrl: 'ಚಿತ್ರ URL',
     updateProduct: 'ಉತ್ಪನ್ನ ನವೀಕರಿಸಿ',
     
     // Aisle Map
@@ -577,6 +580,7 @@ const translations: Record<Language, Translations> = {
     category: 'श्रेणी',
     expiryDate: 'समाप्ति तिथि',
     productImage: 'उत्पाद छवि',
+    imageUrl: 'छवि URL',
     updateProduct: 'उत्पाद अपडेट करें',
     
     // Aisle Map
