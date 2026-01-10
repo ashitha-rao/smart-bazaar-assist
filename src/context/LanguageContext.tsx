@@ -141,6 +141,13 @@ interface Translations {
   verifying: string;
   sendingOTP: string;
   termsOfService: string;
+  otpSentToEmail: string;
+  otpExpired: string;
+  invalidOTP: string;
+  resendOTP: string;
+  resendIn: string;
+  seconds: string;
+  maxResendAttempts: string;
   
   // Delete Dialog
   deleteProduct: string;
@@ -289,6 +296,13 @@ const translations: Record<Language, Translations> = {
     verifying: 'Verifying...',
     sendingOTP: 'Sending OTP...',
     termsOfService: 'By continuing, you agree to our Terms of Service',
+    otpSentToEmail: 'OTP sent to your email',
+    otpExpired: 'OTP has expired. Please request a new one.',
+    invalidOTP: 'Invalid OTP. Please try again.',
+    resendOTP: 'Resend OTP',
+    resendIn: 'Resend in',
+    seconds: 'seconds',
+    maxResendAttempts: 'Maximum resend attempts reached. Please try again later.',
     
     // Delete Dialog
     deleteProduct: 'Delete Product',
@@ -435,6 +449,13 @@ const translations: Record<Language, Translations> = {
     verifying: 'ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...',
     sendingOTP: 'OTP ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ...',
     termsOfService: 'ಮುಂದುವರಿಸುವ ಮೂಲಕ, ನೀವು ನಮ್ಮ ಸೇವಾ ನಿಯಮಗಳನ್ನು ಒಪ್ಪುತ್ತೀರಿ',
+    otpSentToEmail: 'ನಿಮ್ಮ ಇಮೇಲ್‌ಗೆ OTP ಕಳುಹಿಸಲಾಗಿದೆ',
+    otpExpired: 'OTP ಅವಧಿ ಮುಗಿದಿದೆ. ದಯವಿಟ್ಟು ಹೊಸದನ್ನು ವಿನಂತಿಸಿ.',
+    invalidOTP: 'ಅಮಾನ್ಯ OTP. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
+    resendOTP: 'OTP ಮರುಕಳುಹಿಸಿ',
+    resendIn: 'ಮರುಕಳುಹಿಸಿ',
+    seconds: 'ಸೆಕೆಂಡುಗಳು',
+    maxResendAttempts: 'ಗರಿಷ್ಠ ಮರುಕಳುಹಿಸುವ ಪ್ರಯತ್ನಗಳು ತಲುಪಿವೆ. ದಯವಿಟ್ಟು ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
     
     // Delete Dialog
     deleteProduct: 'ಉತ್ಪನ್ನ ಅಳಿಸಿ',
@@ -581,6 +602,13 @@ const translations: Record<Language, Translations> = {
     verifying: 'सत्यापित हो रहा है...',
     sendingOTP: 'OTP भेजा जा रहा है...',
     termsOfService: 'जारी रखकर, आप हमारी सेवा की शर्तों से सहमत होते हैं',
+    otpSentToEmail: 'आपके ईमेल पर OTP भेजा गया',
+    otpExpired: 'OTP समाप्त हो गया है। कृपया नया अनुरोध करें।',
+    invalidOTP: 'अमान्य OTP। कृपया पुनः प्रयास करें।',
+    resendOTP: 'OTP पुनः भेजें',
+    resendIn: 'पुनः भेजें',
+    seconds: 'सेकंड में',
+    maxResendAttempts: 'अधिकतम पुनः भेजने के प्रयास समाप्त। कृपया बाद में पुनः प्रयास करें।',
     
     // Delete Dialog
     deleteProduct: 'उत्पाद हटाएं',
