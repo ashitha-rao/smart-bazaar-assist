@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mail, Shield, ArrowRight, Loader2 } from 'lucide-react';
+import { X, Mail, Shield, ArrowRight, Loader2, Timer, RefreshCw } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface OTPAuthModalProps {
@@ -14,6 +14,15 @@ interface OTPAuthModalProps {
   onClose: () => void;
   onSuccess: () => void;
 }
+
+interface OTPData {
+  otp: string;
+  expiryTime: number;
+  isUsed: boolean;
+}
+
+const OTP_EXPIRY_SECONDS = 120; // 2 minutes
+const MAX_RESEND_ATTEMPTS = 3;
 
 const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
   const { setAuthenticated } = useAuth();
@@ -23,15 +32,59 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
   const [otp, setOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [otpData, setOtpData] = useState<OTPData | null>(null);
+  const [countdown, setCountdown] = useState(0);
+  const [resendAttempts, setResendAttempts] = useState(0);
+
+  // Countdown timer
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (countdown > 0) {
+      interval = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [countdown]);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  const handleSendOtp = async () => {
+  const generateOTP = (): string => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  };
+
+  const sendOTPEmail = useCallback(async (userEmail: string, generatedOTP: string) => {
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+    if (!serviceId || !templateId || !publicKey) {
+      throw new Error('EmailJS configuration is missing');
+    }
+
+    await emailjs.send(
+      serviceId,
+      templateId,
+      {
+        to_email: userEmail,
+        otp: generatedOTP,
+        message: `Your OTP is ${generatedOTP}. It is valid for 2 minutes. Do not share it with anyone.`,
+      },
+      publicKey
+    );
+  }, []);
+
+  const handleSendOtp = async (isResend = false) => {
     if (!validateEmail(email)) {
       setError('Please enter a valid email address');
+      return;
+    }
+
+    if (isResend && resendAttempts >= MAX_RESEND_ATTEMPTS) {
+      setError(t.maxResendAttempts);
       return;
     }
 
@@ -39,23 +92,30 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
     setError('');
 
     try {
-      const { error: signInError } = await supabase.auth.signInWithOtp({
-        email: email.trim(),
-        options: {
-          shouldCreateUser: true,
-        },
+      const generatedOTP = generateOTP();
+      const expiryTime = Date.now() + (OTP_EXPIRY_SECONDS * 1000);
+
+      await sendOTPEmail(email.trim(), generatedOTP);
+
+      // Store OTP in state
+      setOtpData({
+        otp: generatedOTP,
+        expiryTime,
+        isUsed: false,
       });
 
-      if (signInError) {
-        setError(signInError.message);
-        setIsLoading(false);
-        return;
+      // Start countdown
+      setCountdown(OTP_EXPIRY_SECONDS);
+
+      if (isResend) {
+        setResendAttempts((prev) => prev + 1);
       }
 
-      toast.success('OTP sent to your email!');
+      toast.success(t.otpSentToEmail);
       setIsLoading(false);
       setStep('otp');
     } catch (err) {
+      console.error('Error sending OTP:', err);
       setError('Failed to send OTP. Please try again.');
       setIsLoading(false);
     }
@@ -67,31 +127,41 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
       return;
     }
 
+    if (!otpData) {
+      setError('No OTP data found. Please request a new OTP.');
+      return;
+    }
+
     setIsLoading(true);
     setError('');
 
-    try {
-      const { data, error: verifyError } = await supabase.auth.verifyOtp({
-        email: email.trim(),
-        token: otp,
-        type: 'email',
-      });
+    // Check if OTP is expired
+    if (Date.now() > otpData.expiryTime) {
+      setError(t.otpExpired);
+      setIsLoading(false);
+      return;
+    }
 
-      if (verifyError) {
-        setError(verifyError.message);
-        setIsLoading(false);
-        return;
-      }
+    // Check if OTP is already used
+    if (otpData.isUsed) {
+      setError(t.invalidOTP);
+      setIsLoading(false);
+      return;
+    }
 
-      if (data.user) {
-        setAuthenticated(data.user.email || email);
-        toast.success('Verified successfully!');
-        setIsLoading(false);
-        onSuccess();
-        onClose();
-      }
-    } catch (err) {
-      setError('Invalid OTP. Please try again.');
+    // Verify OTP
+    if (otp === otpData.otp) {
+      // Mark OTP as used (one-time use)
+      setOtpData({ ...otpData, isUsed: true });
+
+      // Authenticate user
+      setAuthenticated(email.trim());
+      toast.success('Verified successfully!');
+      setIsLoading(false);
+      onSuccess();
+      onClose();
+    } else {
+      setError(t.invalidOTP);
       setIsLoading(false);
     }
   };
@@ -101,8 +171,19 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
     setEmail('');
     setOtp('');
     setError('');
+    setOtpData(null);
+    setCountdown(0);
+    setResendAttempts(0);
     onClose();
   };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const canResend = countdown === 0 && resendAttempts < MAX_RESEND_ATTEMPTS;
 
   return (
     <AnimatePresence>
@@ -171,7 +252,7 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
                       variant="hero"
                       size="lg"
                       className="w-full"
-                      onClick={handleSendOtp}
+                      onClick={() => handleSendOtp(false)}
                       disabled={isLoading || !validateEmail(email)}
                     >
                       {isLoading ? (
@@ -205,6 +286,14 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
                         {t.enterOTPSentTo}
                       </p>
                       <p className="font-semibold text-foreground">{email}</p>
+                    </div>
+
+                    {/* Countdown Timer */}
+                    <div className="flex items-center justify-center gap-2 text-sm">
+                      <Timer className="w-4 h-4 text-primary" />
+                      <span className={`font-mono ${countdown <= 30 ? 'text-destructive' : 'text-foreground'}`}>
+                        {formatTime(countdown)}
+                      </span>
                     </div>
 
                     <div>
@@ -250,6 +339,29 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
                       )}
                     </Button>
 
+                    {/* Resend OTP */}
+                    <div className="flex items-center justify-center">
+                      {canResend ? (
+                        <Button
+                          variant="ghost"
+                          className="text-primary"
+                          onClick={() => handleSendOtp(true)}
+                          disabled={isLoading}
+                        >
+                          <RefreshCw className="w-4 h-4 mr-2" />
+                          {t.resendOTP} ({MAX_RESEND_ATTEMPTS - resendAttempts} {t.left || 'left'})
+                        </Button>
+                      ) : countdown > 0 ? (
+                        <p className="text-sm text-muted-foreground">
+                          {t.resendIn} {formatTime(countdown)}
+                        </p>
+                      ) : (
+                        <p className="text-sm text-destructive">
+                          {t.maxResendAttempts}
+                        </p>
+                      )}
+                    </div>
+
                     <Button
                       variant="ghost"
                       className="w-full"
@@ -257,6 +369,8 @@ const OTPAuthModal = ({ isOpen, onClose, onSuccess }: OTPAuthModalProps) => {
                         setStep('email');
                         setOtp('');
                         setError('');
+                        setOtpData(null);
+                        setCountdown(0);
                       }}
                     >
                       {t.changeEmail}
