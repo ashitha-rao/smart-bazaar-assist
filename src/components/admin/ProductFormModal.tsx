@@ -15,7 +15,7 @@ interface ProductFormModalProps {
   editProduct?: Product | null;
 }
 
-const emojiOptions = ['🍞', '🥛', '🍎', '🥦', '🍓', '🧈', '🍊', '🥚', '🍚', '🥄', '🍫', '🫒', '🥕', '🍇', '🧀', '🥩', '🍗', '🐟', '🍜', '☕'];
+
 
 const ProductFormModal = ({ isOpen, onClose, onSubmit, editProduct }: ProductFormModalProps) => {
   const { t } = useLanguage();
@@ -29,7 +29,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, editProduct }: ProductFor
     aisle: '',
     stock: '',
     expiryDate: '',
-    image: '🍞',
+        image: '',
     description: '',
   });
 
@@ -59,7 +59,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, editProduct }: ProductFor
         aisle: '',
         stock: '',
         expiryDate: '',
-        image: '🍞',
+        image: '',
         description: '',
       });
     }
@@ -229,23 +229,26 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, editProduct }: ProductFor
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">{t.productImage} *</label>
-                    <div className="flex flex-wrap gap-2">
-                      {emojiOptions.map((emoji) => (
-                        <button
-                          key={emoji}
-                          type="button"
-                          onClick={() => setFormData({ ...formData, image: emoji })}
-                          className={`w-10 h-10 text-xl rounded-lg border-2 transition-all ${
-                            formData.image === emoji
-                              ? 'border-primary bg-primary/10'
-                              : 'border-border hover:border-primary/50'
-                          }`}
-                        >
-                          {emoji}
-                        </button>
-                      ))}
-                    </div>
+                    <label className="text-sm font-medium text-foreground mb-2 block">{t.imageUrl} *</label>
+                    <Input
+                      required
+                      type="url"
+                      value={formData.image}
+                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                      placeholder="https://images.unsplash.com/photo-..."
+                    />
+                    {formData.image && (
+                      <div className="mt-2">
+                        <img
+                          src={formData.image}
+                          alt="Preview"
+                          className="w-20 h-20 object-cover rounded-lg border border-border"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = '/placeholder.svg';
+                          }}
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <Button type="submit" variant="hero" className="w-full" size="lg">
