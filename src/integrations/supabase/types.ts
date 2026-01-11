@@ -14,7 +14,172 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      billing_counters: {
+        Row: {
+          counter_number: number
+          customers_in_queue: number
+          id: number
+          status: string
+          updated_at: string
+          wait_time_minutes: number
+        }
+        Insert: {
+          counter_number: number
+          customers_in_queue?: number
+          id?: number
+          status?: string
+          updated_at?: string
+          wait_time_minutes?: number
+        }
+        Update: {
+          counter_number?: number
+          customers_in_queue?: number
+          id?: number
+          status?: string
+          updated_at?: string
+          wait_time_minutes?: number
+        }
+        Relationships: []
+      }
+      help_requests: {
+        Row: {
+          aisle_location: string | null
+          assigned_to: string | null
+          created_at: string
+          customer_identifier: string
+          id: string
+          message: string | null
+          product_name: string | null
+          request_type: string
+          resolved_at: string | null
+          status: string
+        }
+        Insert: {
+          aisle_location?: string | null
+          assigned_to?: string | null
+          created_at?: string
+          customer_identifier: string
+          id?: string
+          message?: string | null
+          product_name?: string | null
+          request_type: string
+          resolved_at?: string | null
+          status?: string
+        }
+        Update: {
+          aisle_location?: string | null
+          assigned_to?: string | null
+          created_at?: string
+          customer_identifier?: string
+          id?: string
+          message?: string | null
+          product_name?: string | null
+          request_type?: string
+          resolved_at?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
+      session_members: {
+        Row: {
+          id: string
+          joined_at: string
+          member_name: string
+          session_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          member_name: string
+          session_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          member_name?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_members_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "shopping_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shared_cart_items: {
+        Row: {
+          added_at: string
+          added_by: string
+          id: string
+          is_checked: boolean
+          product_id: string
+          product_image: string | null
+          product_name: string
+          product_price: number
+          quantity: number
+          session_id: string
+        }
+        Insert: {
+          added_at?: string
+          added_by: string
+          id?: string
+          is_checked?: boolean
+          product_id: string
+          product_image?: string | null
+          product_name: string
+          product_price: number
+          quantity?: number
+          session_id: string
+        }
+        Update: {
+          added_at?: string
+          added_by?: string
+          id?: string
+          is_checked?: boolean
+          product_id?: string
+          product_image?: string | null
+          product_name?: string
+          product_price?: number
+          quantity?: number
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_cart_items_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "shopping_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shopping_sessions: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          is_active: boolean
+          session_code: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          is_active?: boolean
+          session_code: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_active?: boolean
+          session_code?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
