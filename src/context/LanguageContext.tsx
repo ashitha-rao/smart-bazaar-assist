@@ -155,6 +155,73 @@ interface Translations {
   deleteConfirmation: string;
   cancel: string;
   delete: string;
+  
+  // Advanced Features
+  counterAvailable: string;
+  minWait: string;
+  counterOffline: string;
+  countersAvailable: string;
+  fastest: string;
+  billingCounterStatus: string;
+  inQueue: string;
+  liveUpdates: string;
+  enterYourName: string;
+  errorCreatingSession: string;
+  sessionCreated: string;
+  enterNameAndCode: string;
+  invalidSessionCode: string;
+  joinedSession: string;
+  leftSession: string;
+  members: string;
+  familySync: string;
+  familySyncMode: string;
+  yourName: string;
+  createNewSession: string;
+  or: string;
+  enterSessionCode: string;
+  joinExistingSession: string;
+  sessionCode: string;
+  sharedCart: string;
+  addedBy: string;
+  noItemsYet: string;
+  leaveSession: string;
+  errorSendingRequest: string;
+  helpRequestSent: string;
+  findHelp: string;
+  silentAssistance: string;
+  helpOnTheWay: string;
+  staffWillAssist: string;
+  requestHelpSilently: string;
+  helpInAisle: string;
+  helpFindingProduct: string;
+  generalAssistance: string;
+  whichAisle: string;
+  whatProduct: string;
+  enterProductName: string;
+  additionalMessage: string;
+  describeNeed: string;
+  sending: string;
+  requestHelp: string;
+  pricePerUnit: string;
+  showOnMap: string;
+  frequentlyAsked: string;
+  counterUpdated: string;
+  counterManagement: string;
+  available: string;
+  busy: string;
+  offline: string;
+  waitTime: string;
+  min: string;
+  newHelpRequest: string;
+  requestResolved: string;
+  requestAssigned: string;
+  helpRequests: string;
+  pending: string;
+  noHelpRequests: string;
+  aisleHelp: string;
+  findProduct: string;
+  generalHelp: string;
+  assign: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -311,6 +378,71 @@ const translations: Record<Language, Translations> = {
     deleteConfirmation: 'Are you sure you want to delete this product? This action cannot be undone.',
     cancel: 'Cancel',
     delete: 'Delete',
+    counterAvailable: 'Empty',
+    minWait: 'min wait',
+    counterOffline: 'Offline',
+    countersAvailable: 'counters available',
+    fastest: 'Fastest',
+    billingCounterStatus: 'Billing Counter Status',
+    inQueue: 'in queue',
+    liveUpdates: 'Live updates • Choose the fastest counter',
+    enterYourName: 'Please enter your name',
+    errorCreatingSession: 'Error creating session',
+    sessionCreated: 'Session created! Share the code with family.',
+    enterNameAndCode: 'Please enter your name and session code',
+    invalidSessionCode: 'Invalid session code',
+    joinedSession: 'Joined family session!',
+    leftSession: 'Left family session',
+    members: 'members',
+    familySync: 'Family Sync',
+    familySyncMode: 'Family Sync Mode',
+    yourName: 'Your Name',
+    createNewSession: 'Create New Session',
+    or: 'or',
+    enterSessionCode: 'Enter session code',
+    joinExistingSession: 'Join Existing Session',
+    sessionCode: 'Session Code',
+    sharedCart: 'Shared Cart',
+    addedBy: 'by',
+    noItemsYet: 'No items yet. Add from product pages!',
+    leaveSession: 'Leave Session',
+    errorSendingRequest: 'Error sending request',
+    helpRequestSent: 'Help request sent! Staff will assist you shortly.',
+    findHelp: 'Find Help',
+    silentAssistance: 'Silent Assistance',
+    helpOnTheWay: 'Help is on the way!',
+    staffWillAssist: 'A staff member will assist you shortly.',
+    requestHelpSilently: 'Request help without talking. Staff will come to you.',
+    helpInAisle: 'Help in an aisle',
+    helpFindingProduct: 'Help finding a product',
+    generalAssistance: 'General assistance',
+    whichAisle: 'Which aisle are you in?',
+    whatProduct: 'What product are you looking for?',
+    enterProductName: 'Enter product name',
+    additionalMessage: 'Additional message (optional)',
+    describeNeed: 'Describe what you need help with...',
+    sending: 'Sending...',
+    requestHelp: 'Request Help',
+    pricePerUnit: 'Price Per Unit',
+    showOnMap: 'Show on Map',
+    frequentlyAsked: 'Frequently Asked',
+    counterUpdated: 'Counter updated',
+    counterManagement: 'Counter Management',
+    available: 'Available',
+    busy: 'Busy',
+    offline: 'Offline',
+    waitTime: 'Wait Time',
+    min: 'min',
+    newHelpRequest: 'New help request received!',
+    requestResolved: 'Request marked as resolved',
+    requestAssigned: 'Request assigned',
+    helpRequests: 'Help Requests',
+    pending: 'pending',
+    noHelpRequests: 'No help requests at the moment',
+    aisleHelp: 'Aisle Help',
+    findProduct: 'Find Product',
+    generalHelp: 'General Help',
+    assign: 'Assign',
   },
   kn: {
     // Navbar
@@ -465,6 +597,71 @@ const translations: Record<Language, Translations> = {
     deleteConfirmation: 'ಈ ಉತ್ಪನ್ನವನ್ನು ಅಳಿಸಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ? ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುವುದಿಲ್ಲ.',
     cancel: 'ರದ್ದುಮಾಡಿ',
     delete: 'ಅಳಿಸಿ',
+    counterAvailable: 'ಖಾಲಿ',
+    minWait: 'ನಿಮಿಷ ಕಾಯಿರಿ',
+    counterOffline: 'ಆಫ್‌ಲೈನ್',
+    countersAvailable: 'ಕೌಂಟರ್‌ಗಳು ಲಭ್ಯ',
+    fastest: 'ವೇಗದ',
+    billingCounterStatus: 'ಬಿಲ್ಲಿಂಗ್ ಕೌಂಟರ್ ಸ್ಥಿತಿ',
+    inQueue: 'ಸರತಿಯಲ್ಲಿ',
+    liveUpdates: 'ನೇರ ನವೀಕರಣಗಳು',
+    enterYourName: 'ನಿಮ್ಮ ಹೆಸರು ನಮೂದಿಸಿ',
+    errorCreatingSession: 'ಸೆಷನ್ ರಚಿಸುವಲ್ಲಿ ದೋಷ',
+    sessionCreated: 'ಸೆಷನ್ ರಚಿಸಲಾಗಿದೆ!',
+    enterNameAndCode: 'ಹೆಸರು ಮತ್ತು ಕೋಡ್ ನಮೂದಿಸಿ',
+    invalidSessionCode: 'ಅಮಾನ್ಯ ಸೆಷನ್ ಕೋಡ್',
+    joinedSession: 'ಕುಟುಂಬ ಸೆಷನ್‌ಗೆ ಸೇರಿದ್ದೀರಿ!',
+    leftSession: 'ಸೆಷನ್ ಬಿಟ್ಟಿದ್ದೀರಿ',
+    members: 'ಸದಸ್ಯರು',
+    familySync: 'ಕುಟುಂಬ ಸಿಂಕ್',
+    familySyncMode: 'ಕುಟುಂಬ ಸಿಂಕ್ ಮೋಡ್',
+    yourName: 'ನಿಮ್ಮ ಹೆಸರು',
+    createNewSession: 'ಹೊಸ ಸೆಷನ್ ರಚಿಸಿ',
+    or: 'ಅಥವಾ',
+    enterSessionCode: 'ಸೆಷನ್ ಕೋಡ್ ನಮೂದಿಸಿ',
+    joinExistingSession: 'ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಸೆಷನ್‌ಗೆ ಸೇರಿ',
+    sessionCode: 'ಸೆಷನ್ ಕೋಡ್',
+    sharedCart: 'ಹಂಚಿಕೆಯ ಕಾರ್ಟ್',
+    addedBy: 'ಸೇರಿಸಿದವರು',
+    noItemsYet: 'ಇನ್ನೂ ವಸ್ತುಗಳಿಲ್ಲ',
+    leaveSession: 'ಸೆಷನ್ ಬಿಡಿ',
+    errorSendingRequest: 'ವಿನಂತಿ ಕಳುಹಿಸುವಲ್ಲಿ ದೋಷ',
+    helpRequestSent: 'ಸಹಾಯ ವಿನಂತಿ ಕಳುಹಿಸಲಾಗಿದೆ!',
+    findHelp: 'ಸಹಾಯ ಹುಡುಕಿ',
+    silentAssistance: 'ಮೌನ ಸಹಾಯ',
+    helpOnTheWay: 'ಸಹಾಯ ಬರುತ್ತಿದೆ!',
+    staffWillAssist: 'ಸಿಬ್ಬಂದಿ ಶೀಘ್ರದಲ್ಲೇ ಸಹಾಯ ಮಾಡುತ್ತಾರೆ',
+    requestHelpSilently: 'ಮಾತನಾಡದೆ ಸಹಾಯ ಕೋರಿ',
+    helpInAisle: 'ಸಾಲಿನಲ್ಲಿ ಸಹಾಯ',
+    helpFindingProduct: 'ಉತ್ಪನ್ನ ಹುಡುಕಲು ಸಹಾಯ',
+    generalAssistance: 'ಸಾಮಾನ್ಯ ಸಹಾಯ',
+    whichAisle: 'ಯಾವ ಸಾಲಿನಲ್ಲಿದ್ದೀರಿ?',
+    whatProduct: 'ಯಾವ ಉತ್ಪನ್ನ ಹುಡುಕುತ್ತಿದ್ದೀರಿ?',
+    enterProductName: 'ಉತ್ಪನ್ನದ ಹೆಸರು ನಮೂದಿಸಿ',
+    additionalMessage: 'ಹೆಚ್ಚುವರಿ ಸಂದೇಶ',
+    describeNeed: 'ನಿಮಗೆ ಏನು ಬೇಕು ವಿವರಿಸಿ',
+    sending: 'ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ...',
+    requestHelp: 'ಸಹಾಯ ಕೋರಿ',
+    pricePerUnit: 'ಪ್ರತಿ ಯುನಿಟ್ ಬೆಲೆ',
+    showOnMap: 'ನಕ್ಷೆಯಲ್ಲಿ ತೋರಿಸಿ',
+    frequentlyAsked: 'ಪದೇ ಪದೇ ಕೇಳಲಾಗುತ್ತದೆ',
+    counterUpdated: 'ಕೌಂಟರ್ ನವೀಕರಿಸಲಾಗಿದೆ',
+    counterManagement: 'ಕೌಂಟರ್ ನಿರ್ವಹಣೆ',
+    available: 'ಲಭ್ಯ',
+    busy: 'ಬ್ಯುಸಿ',
+    offline: 'ಆಫ್‌ಲೈನ್',
+    waitTime: 'ಕಾಯುವ ಸಮಯ',
+    min: 'ನಿಮಿಷ',
+    newHelpRequest: 'ಹೊಸ ಸಹಾಯ ವಿನಂತಿ!',
+    requestResolved: 'ವಿನಂತಿ ಪರಿಹರಿಸಲಾಗಿದೆ',
+    requestAssigned: 'ವಿನಂತಿ ನಿಯೋಜಿಸಲಾಗಿದೆ',
+    helpRequests: 'ಸಹಾಯ ವಿನಂತಿಗಳು',
+    pending: 'ಬಾಕಿ',
+    noHelpRequests: 'ಸಹಾಯ ವಿನಂತಿಗಳಿಲ್ಲ',
+    aisleHelp: 'ಸಾಲು ಸಹಾಯ',
+    findProduct: 'ಉತ್ಪನ್ನ ಹುಡುಕಿ',
+    generalHelp: 'ಸಾಮಾನ್ಯ ಸಹಾಯ',
+    assign: 'ನಿಯೋಜಿಸಿ',
   },
   hi: {
     // Navbar
@@ -619,6 +816,71 @@ const translations: Record<Language, Translations> = {
     deleteConfirmation: 'क्या आप वाकई इस उत्पाद को हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।',
     cancel: 'रद्द करें',
     delete: 'हटाएं',
+    counterAvailable: 'खाली',
+    minWait: 'मिनट प्रतीक्षा',
+    counterOffline: 'ऑफलाइन',
+    countersAvailable: 'काउंटर उपलब्ध',
+    fastest: 'सबसे तेज',
+    billingCounterStatus: 'बिलिंग काउंटर स्थिति',
+    inQueue: 'कतार में',
+    liveUpdates: 'लाइव अपडेट',
+    enterYourName: 'अपना नाम दर्ज करें',
+    errorCreatingSession: 'सत्र बनाने में त्रुटि',
+    sessionCreated: 'सत्र बनाया गया!',
+    enterNameAndCode: 'नाम और कोड दर्ज करें',
+    invalidSessionCode: 'अमान्य सत्र कोड',
+    joinedSession: 'परिवार सत्र में शामिल हुए!',
+    leftSession: 'सत्र छोड़ दिया',
+    members: 'सदस्य',
+    familySync: 'परिवार सिंक',
+    familySyncMode: 'परिवार सिंक मोड',
+    yourName: 'आपका नाम',
+    createNewSession: 'नया सत्र बनाएं',
+    or: 'या',
+    enterSessionCode: 'सत्र कोड दर्ज करें',
+    joinExistingSession: 'मौजूदा सत्र में शामिल हों',
+    sessionCode: 'सत्र कोड',
+    sharedCart: 'साझा कार्ट',
+    addedBy: 'द्वारा जोड़ा गया',
+    noItemsYet: 'अभी तक कोई आइटम नहीं',
+    leaveSession: 'सत्र छोड़ें',
+    errorSendingRequest: 'अनुरोध भेजने में त्रुटि',
+    helpRequestSent: 'सहायता अनुरोध भेजा गया!',
+    findHelp: 'सहायता खोजें',
+    silentAssistance: 'मौन सहायता',
+    helpOnTheWay: 'सहायता आ रही है!',
+    staffWillAssist: 'स्टाफ जल्द ही सहायता करेगा',
+    requestHelpSilently: 'बिना बोले सहायता मांगें',
+    helpInAisle: 'गलियारे में सहायता',
+    helpFindingProduct: 'उत्पाद खोजने में सहायता',
+    generalAssistance: 'सामान्य सहायता',
+    whichAisle: 'आप किस गलियारे में हैं?',
+    whatProduct: 'कौन सा उत्पाद खोज रहे हैं?',
+    enterProductName: 'उत्पाद का नाम दर्ज करें',
+    additionalMessage: 'अतिरिक्त संदेश',
+    describeNeed: 'अपनी जरूरत बताएं',
+    sending: 'भेजा जा रहा है...',
+    requestHelp: 'सहायता मांगें',
+    pricePerUnit: 'प्रति यूनिट मूल्य',
+    showOnMap: 'नक्शे पर दिखाएं',
+    frequentlyAsked: 'अक्सर पूछे जाने वाले',
+    counterUpdated: 'काउंटर अपडेट किया गया',
+    counterManagement: 'काउंटर प्रबंधन',
+    available: 'उपलब्ध',
+    busy: 'व्यस्त',
+    offline: 'ऑफलाइन',
+    waitTime: 'प्रतीक्षा समय',
+    min: 'मिनट',
+    newHelpRequest: 'नया सहायता अनुरोध!',
+    requestResolved: 'अनुरोध हल किया गया',
+    requestAssigned: 'अनुरोध सौंपा गया',
+    helpRequests: 'सहायता अनुरोध',
+    pending: 'लंबित',
+    noHelpRequests: 'कोई सहायता अनुरोध नहीं',
+    aisleHelp: 'गलियारा सहायता',
+    findProduct: 'उत्पाद खोजें',
+    generalHelp: 'सामान्य सहायता',
+    assign: 'सौंपें',
   },
 };
 
