@@ -5,6 +5,9 @@ import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/context/LanguageContext';
+import BillingCounterStatus from '@/components/BillingCounterStatus';
+import FamilySyncMode from '@/components/FamilySyncMode';
+import FindHelpButton from '@/components/FindHelpButton';
 
 const Index = () => {
   const { t } = useLanguage();
@@ -112,8 +115,29 @@ const Index = () => {
                 <span>{t.imageSearch}</span>
               </div>
             </motion.div>
+
+            {/* Quick Actions - Family Sync & Find Help */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1 }}
+              className="mt-6 flex flex-wrap gap-3"
+            >
+              <FamilySyncMode />
+              <FindHelpButton />
+            </motion.div>
           </motion.div>
         </div>
+
+        {/* Billing Counter Status - Compact View */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2 }}
+          className="absolute bottom-6 left-1/2 transform -translate-x-1/2"
+        >
+          <BillingCounterStatus compact />
+        </motion.div>
       </section>
 
       {/* Features Section */}

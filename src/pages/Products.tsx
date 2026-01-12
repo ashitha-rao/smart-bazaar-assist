@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { useProducts } from '@/context/ProductContext';
 import { categories } from '@/data/products';
 import { useLanguage } from '@/context/LanguageContext';
+import FamilySyncMode from '@/components/FamilySyncMode';
+import FindHelpButton from '@/components/FindHelpButton';
 
 const Products = () => {
   const { products } = useProducts();
@@ -77,12 +79,20 @@ const Products = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mb-8"
           >
-            <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-2">
-              {t.browseProducts}
-            </h1>
-            <p className="text-muted-foreground">
-              {filteredProducts.length} {t.productsAvailable}
-            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-2">
+                  {t.browseProducts}
+                </h1>
+                <p className="text-muted-foreground">
+                  {filteredProducts.length} {t.productsAvailable}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <FamilySyncMode />
+                <FindHelpButton />
+              </div>
+            </div>
           </motion.div>
 
           {/* Search & Filters */}

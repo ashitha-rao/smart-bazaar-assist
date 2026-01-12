@@ -13,6 +13,9 @@ import { Badge } from '@/components/ui/badge';
 import { getRecommendations } from '@/data/products';
 import OTPAuthModal from '@/components/checkout/OTPAuthModal';
 import { generateBillPDF, generateWhatsAppMessage } from '@/lib/generateBill';
+import BillingCounterStatus from '@/components/BillingCounterStatus';
+import FamilySyncMode from '@/components/FamilySyncMode';
+import FindHelpButton from '@/components/FindHelpButton';
 
 const Checkout = () => {
   const { items, updateQuantity, removeFromCart, totalPrice, clearCart } = useCart();
@@ -275,19 +278,37 @@ const Checkout = () => {
 
       <main className="pt-24 pb-12 px-4">
         <div className="container mx-auto max-w-6xl">
-          {/* Header */}
+          {/* Header with Quick Actions */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-8"
           >
-            <Link to="/products" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-4">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              {t.continueShopping}
-            </Link>
-            <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground">
-              {t.yourCart}
-            </h1>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+              <div>
+                <Link to="/products" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-2">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  {t.continueShopping}
+                </Link>
+                <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground">
+                  {t.yourCart}
+                </h1>
+              </div>
+              <div className="flex gap-2">
+                <FamilySyncMode />
+                <FindHelpButton />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Billing Counter Status */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-8"
+          >
+            <BillingCounterStatus />
           </motion.div>
 
           {items.length === 0 ? (

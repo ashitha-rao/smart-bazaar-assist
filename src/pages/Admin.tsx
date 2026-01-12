@@ -12,6 +12,8 @@ import { useLanguage } from '@/context/LanguageContext';
 import ProductFormModal from '@/components/admin/ProductFormModal';
 import ProductManagement from '@/components/admin/ProductManagement';
 import { Product } from '@/context/CartContext';
+import HelpRequestsPanel from '@/components/admin/HelpRequestsPanel';
+import CounterManagement from '@/components/admin/CounterManagement';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -271,6 +273,16 @@ const Admin = () => {
             </motion.div>
           </div>
 
+          {/* Help Requests Panel */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+            className="mt-8"
+          >
+            <HelpRequestsPanel />
+          </motion.div>
+
           {/* Customer Insights */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -308,6 +320,16 @@ const Admin = () => {
                 </Table>
               </CardContent>
             </Card>
+          </motion.div>
+
+          {/* Counter Management */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45 }}
+            className="mt-8"
+          >
+            <CounterManagement />
           </motion.div>
 
           {/* Product Management Section */}

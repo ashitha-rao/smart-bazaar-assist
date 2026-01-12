@@ -1,11 +1,12 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, MapPin, AlertTriangle } from 'lucide-react';
+import { Plus, MapPin, AlertTriangle, Eye } from 'lucide-react';
 import { Product, useCart } from '@/context/CartContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import AisleMap from './AisleMap';
+import ProductDetailModal from './ProductDetailModal';
 import { useLanguage } from '@/context/LanguageContext';
 
 interface ProductCardProps {
@@ -16,6 +17,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const { addToCart } = useCart();
   const { t } = useLanguage();
   const [showMap, setShowMap] = useState(false);
+  const [showDetail, setShowDetail] = useState(false);
   const [flyingEmoji, setFlyingEmoji] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -146,6 +148,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
             <Button
               variant="outline"
               size="sm"
+              onClick={() => setShowDetail(true)}
+            >
+              <Eye className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setShowMap(true)}
             >
               <MapPin className="w-4 h-4" />
@@ -165,6 +174,17 @@ const ProductCard = ({ product }: ProductCardProps) => {
         onClose={() => setShowMap(false)}
         aisle={product.aisle}
         productName={product.name}
+      />
+
+      {/* Product Detail Modal with FAQ and Price Per Unit */}
+      <ProductDetailModal
+        product={product}
+        isOpen={showDetail}
+        onClose={() => setShowDetail(false)}
+        onShowMap={() => {
+          setShowDetail(false);
+          setShowMap(true);
+        }}
       />
     </>
   );
