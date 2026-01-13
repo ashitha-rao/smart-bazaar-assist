@@ -222,6 +222,62 @@ interface Translations {
   findProduct: string;
   generalHelp: string;
   assign: string;
+  
+  // Magic Link Auth & Customer Dashboard
+  error: string;
+  pleaseEnterEmail: string;
+  magicLinkSent: string;
+  checkYourEmail: string;
+  failedToSendLink: string;
+  checkYourInbox: string;
+  magicLinkSentTo: string;
+  clickLinkToLogin: string;
+  tryDifferentEmail: string;
+  signInToCheckout: string;
+  enterEmailForMagicLink: string;
+  sendMagicLink: string;
+  pleaseEnterName: string;
+  profileCompleted: string;
+  welcomeToSmartBazaar: string;
+  failedToUpdateProfile: string;
+  completeYourProfile: string;
+  almostThere: string;
+  loggedInAs: string;
+  fullName: string;
+  enterFullName: string;
+  optional: string;
+  saving: string;
+  completeProfile: string;
+  customerDashboard: string;
+  searchCustomers: string;
+  totalCustomers: string;
+  goldMembers: string;
+  totalRevenue: string;
+  avgLTV: string;
+  noCustomersYet: string;
+  customer: string;
+  status: string;
+  tier: string;
+  ltv: string;
+  lastVisit: string;
+  profileInfo: string;
+  purchaseInsights: string;
+  totalOrders: string;
+  avgOrderValue: string;
+  lifetimeValue: string;
+  frequentItems: string;
+  behavioralInsights: string;
+  visitFrequency: string;
+  paymentMethod: string;
+  adminNotes: string;
+  edit: string;
+  recentOrders: string;
+  editAdminNotes: string;
+  addNotesForCustomer: string;
+  enterNotes: string;
+  notesSaved: string;
+  adminNotesUpdated: string;
+  save: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -443,6 +499,60 @@ const translations: Record<Language, Translations> = {
     findProduct: 'Find Product',
     generalHelp: 'General Help',
     assign: 'Assign',
+    error: 'Error',
+    pleaseEnterEmail: 'Please enter your email address',
+    magicLinkSent: 'Magic Link Sent!',
+    checkYourEmail: 'Check your email for the login link',
+    failedToSendLink: 'Failed to send magic link',
+    checkYourInbox: 'Check Your Inbox',
+    magicLinkSentTo: "We've sent a magic link to",
+    clickLinkToLogin: 'Click the link in the email to log in',
+    tryDifferentEmail: 'Try a different email',
+    signInToCheckout: 'Sign in to Checkout',
+    enterEmailForMagicLink: 'Enter your email to receive a magic link',
+    sendMagicLink: 'Send Magic Link',
+    pleaseEnterName: 'Please enter your full name',
+    profileCompleted: 'Profile Completed!',
+    welcomeToSmartBazaar: 'Welcome to Smart Bazaar',
+    failedToUpdateProfile: 'Failed to update profile',
+    completeYourProfile: 'Complete Your Profile',
+    almostThere: "You're almost there! Just a few more details.",
+    loggedInAs: 'Logged in as',
+    fullName: 'Full Name',
+    enterFullName: 'Enter your full name',
+    optional: 'Optional',
+    saving: 'Saving...',
+    completeProfile: 'Complete Profile',
+    customerDashboard: 'Customer Dashboard',
+    searchCustomers: 'Search customers...',
+    totalCustomers: 'Total Customers',
+    goldMembers: 'Gold Members',
+    totalRevenue: 'Total Revenue',
+    avgLTV: 'Avg LTV',
+    noCustomersYet: 'No customers yet. Customers will appear here after their first purchase.',
+    customer: 'Customer',
+    status: 'Status',
+    tier: 'Tier',
+    ltv: 'LTV',
+    lastVisit: 'Last Visit',
+    profileInfo: 'Profile Info',
+    purchaseInsights: 'Purchase Insights',
+    totalOrders: 'Total Orders',
+    avgOrderValue: 'Avg Order Value',
+    lifetimeValue: 'Lifetime Value',
+    frequentItems: 'Frequently Purchased',
+    behavioralInsights: 'Behavioral Insights',
+    visitFrequency: 'Visit Frequency',
+    paymentMethod: 'Preferred Payment',
+    adminNotes: 'Admin Notes',
+    edit: 'Edit',
+    recentOrders: 'Recent Orders',
+    editAdminNotes: 'Edit Admin Notes',
+    addNotesForCustomer: 'Add internal notes for',
+    enterNotes: 'Enter notes...',
+    notesSaved: 'Notes Saved',
+    adminNotesUpdated: 'Admin notes have been updated',
+    save: 'Save',
   },
   kn: {
     // Navbar
@@ -662,6 +772,60 @@ const translations: Record<Language, Translations> = {
     findProduct: 'ಉತ್ಪನ್ನ ಹುಡುಕಿ',
     generalHelp: 'ಸಾಮಾನ್ಯ ಸಹಾಯ',
     assign: 'ನಿಯೋಜಿಸಿ',
+    error: 'ದೋಷ',
+    pleaseEnterEmail: 'ದಯವಿಟ್ಟು ನಿಮ್ಮ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ',
+    magicLinkSent: 'ಮ್ಯಾಜಿಕ್ ಲಿಂಕ್ ಕಳುಹಿಸಲಾಗಿದೆ!',
+    checkYourEmail: 'ಲಾಗಿನ್ ಲಿಂಕ್‌ಗಾಗಿ ನಿಮ್ಮ ಇಮೇಲ್ ಪರಿಶೀಲಿಸಿ',
+    failedToSendLink: 'ಮ್ಯಾಜಿಕ್ ಲಿಂಕ್ ಕಳುಹಿಸಲು ವಿಫಲವಾಗಿದೆ',
+    checkYourInbox: 'ನಿಮ್ಮ ಇನ್‌ಬಾಕ್ಸ್ ಪರಿಶೀಲಿಸಿ',
+    magicLinkSentTo: 'ನಾವು ಮ್ಯಾಜಿಕ್ ಲಿಂಕ್ ಕಳುಹಿಸಿದ್ದೇವೆ',
+    clickLinkToLogin: 'ಲಾಗಿನ್ ಮಾಡಲು ಇಮೇಲ್‌ನಲ್ಲಿರುವ ಲಿಂಕ್ ಕ್ಲಿಕ್ ಮಾಡಿ',
+    tryDifferentEmail: 'ಬೇರೆ ಇಮೇಲ್ ಪ್ರಯತ್ನಿಸಿ',
+    signInToCheckout: 'ಚೆಕ್‌ಔಟ್‌ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ',
+    enterEmailForMagicLink: 'ಮ್ಯಾಜಿಕ್ ಲಿಂಕ್ ಪಡೆಯಲು ನಿಮ್ಮ ಇಮೇಲ್ ನಮೂದಿಸಿ',
+    sendMagicLink: 'ಮ್ಯಾಜಿಕ್ ಲಿಂಕ್ ಕಳುಹಿಸಿ',
+    pleaseEnterName: 'ದಯವಿಟ್ಟು ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರನ್ನು ನಮೂದಿಸಿ',
+    profileCompleted: 'ಪ್ರೊಫೈಲ್ ಪೂರ್ಣಗೊಂಡಿದೆ!',
+    welcomeToSmartBazaar: 'ಸ್ಮಾರ್ಟ್ ಬಜಾರ್‌ಗೆ ಸುಸ್ವಾಗತ',
+    failedToUpdateProfile: 'ಪ್ರೊಫೈಲ್ ನವೀಕರಿಸಲು ವಿಫಲವಾಗಿದೆ',
+    completeYourProfile: 'ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಪೂರ್ಣಗೊಳಿಸಿ',
+    almostThere: 'ನೀವು ಬಹುತೇಕ ಅಲ್ಲಿದ್ದೀರಿ! ಇನ್ನೂ ಕೆಲವು ವಿವರಗಳು.',
+    loggedInAs: 'ಲಾಗಿನ್ ಆಗಿದೆ',
+    fullName: 'ಪೂರ್ಣ ಹೆಸರು',
+    enterFullName: 'ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರನ್ನು ನಮೂದಿಸಿ',
+    optional: 'ಐಚ್ಛಿಕ',
+    saving: 'ಉಳಿಸಲಾಗುತ್ತಿದೆ...',
+    completeProfile: 'ಪ್ರೊಫೈಲ್ ಪೂರ್ಣಗೊಳಿಸಿ',
+    customerDashboard: 'ಗ್ರಾಹಕ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
+    searchCustomers: 'ಗ್ರಾಹಕರನ್ನು ಹುಡುಕಿ...',
+    totalCustomers: 'ಒಟ್ಟು ಗ್ರಾಹಕರು',
+    goldMembers: 'ಗೋಲ್ಡ್ ಸದಸ್ಯರು',
+    totalRevenue: 'ಒಟ್ಟು ಆದಾಯ',
+    avgLTV: 'ಸರಾಸರಿ LTV',
+    noCustomersYet: 'ಇನ್ನೂ ಗ್ರಾಹಕರಿಲ್ಲ.',
+    customer: 'ಗ್ರಾಹಕ',
+    status: 'ಸ್ಥಿತಿ',
+    tier: 'ಹಂತ',
+    ltv: 'LTV',
+    lastVisit: 'ಕೊನೆಯ ಭೇಟಿ',
+    profileInfo: 'ಪ್ರೊಫೈಲ್ ಮಾಹಿತಿ',
+    purchaseInsights: 'ಖರೀದಿ ಒಳನೋಟಗಳು',
+    totalOrders: 'ಒಟ್ಟು ಆರ್ಡರ್‌ಗಳು',
+    avgOrderValue: 'ಸರಾಸರಿ ಆರ್ಡರ್ ಮೌಲ್ಯ',
+    lifetimeValue: 'ಜೀವಿತಾವಧಿ ಮೌಲ್ಯ',
+    frequentItems: 'ಆಗಾಗ್ಗೆ ಖರೀದಿಸಿದ',
+    behavioralInsights: 'ವರ್ತನೆಯ ಒಳನೋಟಗಳು',
+    visitFrequency: 'ಭೇಟಿ ಆವರ್ತನ',
+    paymentMethod: 'ಆದ್ಯತೆಯ ಪಾವತಿ',
+    adminNotes: 'ನಿರ್ವಾಹಕ ಟಿಪ್ಪಣಿಗಳು',
+    edit: 'ಸಂಪಾದಿಸಿ',
+    recentOrders: 'ಇತ್ತೀಚಿನ ಆರ್ಡರ್‌ಗಳು',
+    editAdminNotes: 'ನಿರ್ವಾಹಕ ಟಿಪ್ಪಣಿಗಳನ್ನು ಸಂಪಾದಿಸಿ',
+    addNotesForCustomer: 'ಆಂತರಿಕ ಟಿಪ್ಪಣಿಗಳನ್ನು ಸೇರಿಸಿ',
+    enterNotes: 'ಟಿಪ್ಪಣಿಗಳನ್ನು ನಮೂದಿಸಿ...',
+    notesSaved: 'ಟಿಪ್ಪಣಿಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ',
+    adminNotesUpdated: 'ನಿರ್ವಾಹಕ ಟಿಪ್ಪಣಿಗಳನ್ನು ನವೀಕರಿಸಲಾಗಿದೆ',
+    save: 'ಉಳಿಸಿ',
   },
   hi: {
     // Navbar

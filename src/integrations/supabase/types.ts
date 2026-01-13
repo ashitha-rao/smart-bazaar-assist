@@ -41,6 +41,110 @@ export type Database = {
         }
         Relationships: []
       }
+      billing_history: {
+        Row: {
+          bill_number: string
+          created_at: string
+          customer_email: string
+          customer_profile_id: string | null
+          gst: number
+          id: string
+          items: Json
+          payment_method: string | null
+          pdf_sent: boolean | null
+          subtotal: number
+          total: number
+        }
+        Insert: {
+          bill_number: string
+          created_at?: string
+          customer_email: string
+          customer_profile_id?: string | null
+          gst: number
+          id?: string
+          items: Json
+          payment_method?: string | null
+          pdf_sent?: boolean | null
+          subtotal: number
+          total: number
+        }
+        Update: {
+          bill_number?: string
+          created_at?: string
+          customer_email?: string
+          customer_profile_id?: string | null
+          gst?: number
+          id?: string
+          items?: Json
+          payment_method?: string | null
+          pdf_sent?: boolean | null
+          subtotal?: number
+          total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "billing_history_customer_profile_id_fkey"
+            columns: ["customer_profile_id"]
+            isOneToOne: false
+            referencedRelation: "customer_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_profiles: {
+        Row: {
+          account_status: string | null
+          admin_notes: string | null
+          created_at: string
+          custom_tags: string[] | null
+          email: string
+          full_name: string | null
+          id: string
+          last_visit_at: string | null
+          membership_tier: string | null
+          phone_number: string | null
+          profile_completed: boolean | null
+          total_lifetime_value: number | null
+          updated_at: string
+          user_id: string
+          visit_count: number | null
+        }
+        Insert: {
+          account_status?: string | null
+          admin_notes?: string | null
+          created_at?: string
+          custom_tags?: string[] | null
+          email: string
+          full_name?: string | null
+          id?: string
+          last_visit_at?: string | null
+          membership_tier?: string | null
+          phone_number?: string | null
+          profile_completed?: boolean | null
+          total_lifetime_value?: number | null
+          updated_at?: string
+          user_id: string
+          visit_count?: number | null
+        }
+        Update: {
+          account_status?: string | null
+          admin_notes?: string | null
+          created_at?: string
+          custom_tags?: string[] | null
+          email?: string
+          full_name?: string | null
+          id?: string
+          last_visit_at?: string | null
+          membership_tier?: string | null
+          phone_number?: string | null
+          profile_completed?: boolean | null
+          total_lifetime_value?: number | null
+          updated_at?: string
+          user_id?: string
+          visit_count?: number | null
+        }
+        Relationships: []
+      }
       help_requests: {
         Row: {
           aisle_location: string | null
