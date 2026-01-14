@@ -14,6 +14,7 @@ import ProductManagement from '@/components/admin/ProductManagement';
 import { Product } from '@/context/CartContext';
 import HelpRequestsPanel from '@/components/admin/HelpRequestsPanel';
 import CounterManagement from '@/components/admin/CounterManagement';
+import CustomerDashboard from '@/components/admin/CustomerDashboard';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -332,11 +333,21 @@ const Admin = () => {
             <CounterManagement />
           </motion.div>
 
-          {/* Product Management Section */}
+          {/* Customer Dashboard */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
+            className="mt-8"
+          >
+            <CustomerDashboard />
+          </motion.div>
+
+          {/* Product Management Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.55 }}
             className="mt-8"
           >
             <ProductManagement />

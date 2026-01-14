@@ -11,34 +11,141 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { getRecommendations } from '@/data/products';
-import OTPAuthModal from '@/components/checkout/OTPAuthModal';
+import MagicLinkAuth from '@/components/auth/MagicLinkAuth';
 import { generateBillPDF, generateWhatsAppMessage } from '@/lib/generateBill';
 import BillingCounterStatus from '@/components/BillingCounterStatus';
 import FamilySyncMode from '@/components/FamilySyncMode';
 import FindHelpButton from '@/components/FindHelpButton';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const Checkout = () => {
   const { items, updateQuantity, removeFromCart, totalPrice, clearCart } = useCart();
   const { isAuthenticated, email } = useAuth();
   const { t } = useLanguage();
+  const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
-  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [pendingPayment, setPendingPayment] = useState(false);
+  const [billNumber, setBillNumber] = useState('');
 
   const recommendations = getRecommendations(items);
   const gst = totalPrice * 0.05;
   const finalTotal = totalPrice + gst;
 
-  const processPayment = () => {
+  const generateBillNumber = () => {
+    const date = new Date();
+    const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
+    const randomNum = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    return `SB-${dateStr}-${randomNum}`;
+  };
+
+  const saveBillingHistory = async (billNum: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Get customer profile ID
+      const { data: profile } = await supabase
+        .from('customer_profiles')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      const billItems = items.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        brand: item.brand,
+      }));
+
+      await supabase.from('billing_history').insert({
+        bill_number: billNum,
+        customer_email: email || '',
+        customer_profile_id: profile?.id || null,
+        items: billItems,
+        subtotal: totalPrice,
+        gst: gst,
+        total: finalTotal,
+        payment_method: 'Card',
+        pdf_sent: false,
+      });
+
+      // Update customer profile stats
+      if (profile?.id) {
+        const { data: existingProfile } = await supabase
+          .from('customer_profiles')
+          .select('total_lifetime_value, visit_count')
+          .eq('id', profile.id)
+          .single();
+
+        await supabase
+          .from('customer_profiles')
+          .update({
+            total_lifetime_value: (existingProfile?.total_lifetime_value || 0) + finalTotal,
+            visit_count: (existingProfile?.visit_count || 0) + 1,
+            last_visit_at: new Date().toISOString(),
+          })
+          .eq('id', profile.id);
+      }
+    } catch (error) {
+      console.error('Error saving billing history:', error);
+    }
+  };
+
+  const sendBillEmail = async (billNum: string) => {
+    try {
+      const billItems = items.map(item => ({
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        brand: item.brand,
+      }));
+
+      const response = await supabase.functions.invoke('send-bill-email', {
+        body: {
+          customerEmail: email,
+          billNumber: billNum,
+          items: billItems,
+          subtotal: totalPrice,
+          gst: gst,
+          total: finalTotal,
+          paymentMethod: 'Card',
+        },
+      });
+
+      if (response.error) {
+        console.error('Error sending bill email:', response.error);
+      } else {
+        // Update billing history to mark pdf_sent as true
+        await supabase
+          .from('billing_history')
+          .update({ pdf_sent: true })
+          .eq('bill_number', billNum);
+      }
+    } catch (error) {
+      console.error('Error sending bill email:', error);
+    }
+  };
+
+  const processPayment = async () => {
+    const newBillNumber = generateBillNumber();
+    setBillNumber(newBillNumber);
+    
     setShowScanner(true);
     setIsProcessing(true);
 
     // Simulate barcode scanning and payment
-    setTimeout(() => {
+    setTimeout(async () => {
       setShowScanner(false);
       setIsComplete(true);
+      
+      // Save billing history and send email
+      await saveBillingHistory(newBillNumber);
+      await sendBillEmail(newBillNumber);
       
       // Confetti explosion!
       confetti({
@@ -68,13 +175,14 @@ const Checkout = () => {
   const handlePayment = () => {
     if (!isAuthenticated) {
       setPendingPayment(true);
-      setShowOTPModal(true);
+      setShowAuthModal(true);
     } else {
       processPayment();
     }
   };
 
-  const handleOTPSuccess = () => {
+  const handleAuthSuccess = () => {
+    setShowAuthModal(false);
     if (pendingPayment) {
       setPendingPayment(false);
       processPayment();
@@ -88,6 +196,11 @@ const Checkout = () => {
       gst,
       total: finalTotal,
       email: email || 'Guest',
+      billNumber: billNumber,
+    });
+    toast({
+      title: t.downloadBill,
+      description: 'Your bill has been downloaded.',
     });
   };
 
@@ -212,14 +325,14 @@ const Checkout = () => {
     <div className="min-h-screen bg-background relative">
       <Navbar />
 
-      {/* OTP Auth Modal */}
-      <OTPAuthModal
-        isOpen={showOTPModal}
+      {/* Magic Link Auth Modal */}
+      <MagicLinkAuth
+        isOpen={showAuthModal}
         onClose={() => {
-          setShowOTPModal(false);
+          setShowAuthModal(false);
           setPendingPayment(false);
         }}
-        onSuccess={handleOTPSuccess}
+        onSuccess={handleAuthSuccess}
       />
 
       {/* Barcode Scanner Overlay */}

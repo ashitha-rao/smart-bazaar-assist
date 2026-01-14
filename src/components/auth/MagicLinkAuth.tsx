@@ -1,24 +1,47 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Loader2, CheckCircle, Sparkles } from 'lucide-react';
+import { Mail, Loader2, CheckCircle, Sparkles, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useLanguage } from '@/context/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/context/AuthContext';
 
-interface MagicLinkAuthProps {
+export interface MagicLinkAuthProps {
+  isOpen?: boolean;
   onClose?: () => void;
+  onSuccess?: () => void;
   redirectTo?: string;
 }
 
-const MagicLinkAuth = ({ onClose, redirectTo = '/' }: MagicLinkAuthProps) => {
+const MagicLinkAuth = ({ isOpen, onClose, onSuccess, redirectTo = '/checkout' }: MagicLinkAuthProps) => {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);
   const { t } = useLanguage();
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
+
+  // Listen for authentication state changes
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        onSuccess?.();
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [onSuccess]);
+
+  // If user is already authenticated, call onSuccess
+  useEffect(() => {
+    if (isAuthenticated && isOpen) {
+      onSuccess?.();
+    }
+  }, [isAuthenticated, isOpen, onSuccess]);
 
   const handleSendMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,39 +84,35 @@ const MagicLinkAuth = ({ onClose, redirectTo = '/' }: MagicLinkAuthProps) => {
     }
   };
 
-  if (isSent) {
-    return (
-      <Card variant="elevated" className="w-full max-w-md mx-auto">
-        <CardContent className="pt-8 pb-8 text-center">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', stiffness: 200 }}
-          >
-            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-10 h-10 text-primary" />
-            </div>
-          </motion.div>
-          <h2 className="font-display text-2xl font-bold text-foreground mb-2">
-            {t.checkYourInbox || 'Check Your Inbox'}
-          </h2>
-          <p className="text-muted-foreground mb-4">
-            {t.magicLinkSentTo || "We've sent a magic link to"}
-          </p>
-          <p className="font-semibold text-foreground mb-6">{email}</p>
-          <p className="text-sm text-muted-foreground mb-6">
-            {t.clickLinkToLogin || 'Click the link in the email to log in'}
-          </p>
-          <Button variant="outline" onClick={() => setIsSent(false)}>
-            {t.tryDifferentEmail || 'Try a different email'}
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card variant="elevated" className="w-full max-w-md mx-auto">
+  const content = isSent ? (
+    <Card variant="elevated" className="w-full border-0 shadow-none">
+      <CardContent className="pt-8 pb-8 text-center">
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: 'spring', stiffness: 200 }}
+        >
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="w-10 h-10 text-primary" />
+          </div>
+        </motion.div>
+        <h2 className="font-display text-2xl font-bold text-foreground mb-2">
+          {t.checkYourInbox || 'Check Your Inbox'}
+        </h2>
+        <p className="text-muted-foreground mb-4">
+          {t.magicLinkSentTo || "We've sent a magic link to"}
+        </p>
+        <p className="font-semibold text-foreground mb-6">{email}</p>
+        <p className="text-sm text-muted-foreground mb-6">
+          {t.clickLinkToLogin || 'Click the link in the email to log in'}
+        </p>
+        <Button variant="outline" onClick={() => setIsSent(false)}>
+          {t.tryDifferentEmail || 'Try a different email'}
+        </Button>
+      </CardContent>
+    </Card>
+  ) : (
+    <Card variant="elevated" className="w-full border-0 shadow-none">
       <CardHeader className="text-center">
         <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
           <Sparkles className="w-8 h-8 text-primary" />
@@ -158,6 +177,20 @@ const MagicLinkAuth = ({ onClose, redirectTo = '/' }: MagicLinkAuthProps) => {
       </CardContent>
     </Card>
   );
+
+  // If isOpen is provided, render as a modal dialog
+  if (isOpen !== undefined) {
+    return (
+      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose?.()}>
+        <DialogContent className="sm:max-w-md p-0 overflow-hidden">
+          {content}
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // Otherwise, render inline
+  return <div className="w-full max-w-md mx-auto">{content}</div>;
 };
 
 export default MagicLinkAuth;
