@@ -7,13 +7,15 @@ interface BillData {
   gst: number;
   total: number;
   email: string;
+  billNumber?: string;
+  paymentMethod?: string;
 }
 
 export const generateBillPDF = (data: BillData): void => {
-  const { items, subtotal, gst, total, email } = data;
+  const { items, subtotal, gst, total, email, billNumber: providedBillNumber, paymentMethod = 'Card' } = data;
   const doc = new jsPDF();
   
-  const billNumber = `SB${Date.now().toString().slice(-8)}`;
+  const billNumber = providedBillNumber || `SB${Date.now().toString().slice(-8)}`;
   const date = new Date().toLocaleDateString('en-IN');
   const time = new Date().toLocaleTimeString('en-IN');
   
@@ -44,11 +46,13 @@ export const generateBillPDF = (data: BillData): void => {
   doc.text('Bill No:', 20, 55);
   doc.text('Date:', 20, 62);
   doc.text('Time:', 20, 69);
+  doc.text('Payment:', 20, 76);
   
   doc.setFont('helvetica', 'normal');
   doc.text(billNumber, 50, 55);
   doc.text(date, 50, 62);
   doc.text(time, 50, 69);
+  doc.text(paymentMethod, 50, 76);
   
   // Right side - Customer info
   doc.setFont('helvetica', 'bold');
@@ -59,22 +63,22 @@ export const generateBillPDF = (data: BillData): void => {
   // Divider line
   doc.setDrawColor(200, 200, 200);
   doc.setLineWidth(0.5);
-  doc.line(20, 78, 190, 78);
+  doc.line(20, 82, 190, 82);
   
   // Table header
   doc.setFillColor(245, 245, 245);
-  doc.rect(20, 82, 170, 10, 'F');
+  doc.rect(20, 86, 170, 10, 'F');
   
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
-  doc.text('Item', 25, 89);
-  doc.text('Qty', 110, 89);
-  doc.text('Price', 135, 89);
-  doc.text('Total', 165, 89);
+  doc.text('Item', 25, 93);
+  doc.text('Qty', 110, 93);
+  doc.text('Price', 135, 93);
+  doc.text('Total', 165, 93);
   
   // Table content
   doc.setFont('helvetica', 'normal');
-  let yPos = 100;
+  let yPos = 104;
   
   items.forEach((item) => {
     const itemTotal = item.price * item.quantity;
