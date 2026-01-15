@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Minus, Plus, Trash2, CreditCard, ArrowLeft, Sparkles, Mail, MessageCircle, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -20,7 +20,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 const Checkout = () => {
-  const { items, updateQuantity, removeFromCart, totalPrice, clearCart } = useCart();
+  const { items, updateQuantity, removeFromCart, totalPrice, clearCart, restoreCartFromAuth } = useCart();
   const { isAuthenticated, email } = useAuth();
   const { t } = useLanguage();
   const { toast } = useToast();
@@ -30,6 +30,21 @@ const Checkout = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [pendingPayment, setPendingPayment] = useState(false);
   const [billNumber, setBillNumber] = useState('');
+  const hasRestoredCart = useRef(false);
+
+  // Restore cart after magic link authentication
+  useEffect(() => {
+    if (isAuthenticated && !hasRestoredCart.current) {
+      hasRestoredCart.current = true;
+      const restored = restoreCartFromAuth();
+      if (restored) {
+        toast({
+          title: t.loginSuccessful || 'Login successful',
+          description: t.completePaymentMessage || 'You can complete the payment now.',
+        });
+      }
+    }
+  }, [isAuthenticated, restoreCartFromAuth, toast, t]);
 
   const recommendations = getRecommendations(items);
   const gst = totalPrice * 0.05;

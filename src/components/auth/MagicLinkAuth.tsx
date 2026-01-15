@@ -9,7 +9,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/AuthContext';
-
+import { useCart } from '@/context/CartContext';
 export interface MagicLinkAuthProps {
   isOpen?: boolean;
   onClose?: () => void;
@@ -24,6 +24,7 @@ const MagicLinkAuth = ({ isOpen, onClose, onSuccess, redirectTo = '/checkout' }:
   const { t } = useLanguage();
   const { toast } = useToast();
   const { isAuthenticated } = useAuth();
+  const { persistCartForAuth } = useCart();
 
   // Listen for authentication state changes
   useEffect(() => {
@@ -58,6 +59,9 @@ const MagicLinkAuth = ({ isOpen, onClose, onSuccess, redirectTo = '/checkout' }:
     setIsLoading(true);
 
     try {
+      // Persist cart before sending magic link
+      persistCartForAuth();
+
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {

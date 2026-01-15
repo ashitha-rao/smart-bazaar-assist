@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export interface Product {
   id: string;
@@ -27,13 +27,65 @@ interface CartContextType {
   totalItems: number;
   totalPrice: number;
   cartBounce: boolean;
+  persistCartForAuth: () => void;
+  restoreCartFromAuth: () => boolean;
 }
+
+const CART_STORAGE_KEY = 'smart_bazaar_cart';
+const CART_AUTH_STORAGE_KEY = 'smart_bazaar_cart_auth_pending';
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItem[]>(() => {
+    // Restore cart from localStorage on initial load
+    try {
+      const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+      if (savedCart) {
+        return JSON.parse(savedCart);
+      }
+    } catch (e) {
+      console.error('Failed to restore cart:', e);
+    }
+    return [];
+  });
   const [cartBounce, setCartBounce] = useState(false);
+
+  // Persist cart to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+    } catch (e) {
+      console.error('Failed to persist cart:', e);
+    }
+  }, [items]);
+
+  // Persist cart specifically for auth flow (before magic link redirect)
+  const persistCartForAuth = () => {
+    try {
+      localStorage.setItem(CART_AUTH_STORAGE_KEY, JSON.stringify(items));
+    } catch (e) {
+      console.error('Failed to persist cart for auth:', e);
+    }
+  };
+
+  // Restore cart after auth success - returns true if cart was restored
+  const restoreCartFromAuth = (): boolean => {
+    try {
+      const savedCart = localStorage.getItem(CART_AUTH_STORAGE_KEY);
+      if (savedCart) {
+        const parsedCart = JSON.parse(savedCart);
+        if (parsedCart && parsedCart.length > 0) {
+          setItems(parsedCart);
+          localStorage.removeItem(CART_AUTH_STORAGE_KEY);
+          return true;
+        }
+      }
+    } catch (e) {
+      console.error('Failed to restore cart from auth:', e);
+    }
+    return false;
+  };
 
   const addToCart = (product: Product) => {
     setItems(prev => {
@@ -85,6 +137,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         totalItems,
         totalPrice,
         cartBounce,
+        persistCartForAuth,
+        restoreCartFromAuth,
       }}
     >
       {children}
