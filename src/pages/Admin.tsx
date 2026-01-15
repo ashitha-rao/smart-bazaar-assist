@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Lock, AlertTriangle, Package, Users, TrendingUp, Clock, Plus } from 'lucide-react';
+import { Lock, AlertTriangle, Package, Clock, Plus } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +14,6 @@ import ProductManagement from '@/components/admin/ProductManagement';
 import { Product } from '@/context/CartContext';
 import HelpRequestsPanel from '@/components/admin/HelpRequestsPanel';
 import CounterManagement from '@/components/admin/CounterManagement';
-import CustomerDashboard from '@/components/admin/CustomerDashboard';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -48,14 +47,6 @@ const Admin = () => {
     return daysUntilExpiry <= 5;
   });
 
-  // Mock customer data
-  const customerInsights = [
-    { phone: '+91 98765 43210', time: '10:30 AM', total: 'Rs. 542' },
-    { phone: '+91 87654 32109', time: '11:15 AM', total: 'Rs. 1,250' },
-    { phone: '+91 76543 21098', time: '12:45 PM', total: 'Rs. 328' },
-    { phone: '+91 65432 10987', time: '2:20 PM', total: 'Rs. 875' },
-    { phone: '+91 54321 09876', time: '3:55 PM', total: 'Rs. 1,680' },
-  ];
 
   if (!isAuthenticated) {
     return (
@@ -151,7 +142,6 @@ const Admin = () => {
               { icon: Package, label: t.totalProducts, value: products.length, color: 'bg-primary' },
               { icon: AlertTriangle, label: t.lowStock, value: lowStockProducts.length, color: 'bg-destructive' },
               { icon: Clock, label: t.nearExpiry, value: nearExpiryProducts.length, color: 'bg-warning' },
-              { icon: Users, label: t.customersToday, value: customerInsights.length, color: 'bg-bazaar-lavender' },
             ].map((stat, index) => (
               <Card key={stat.label} variant="default">
                 <CardContent className="p-4 flex items-center gap-4">
@@ -284,45 +274,6 @@ const Admin = () => {
             <HelpRequestsPanel />
           </motion.div>
 
-          {/* Customer Insights */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="mt-8"
-          >
-            <Card variant="elevated">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-primary" />
-                  {t.customerInsights} ({t.today})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t.phoneNumber}</TableHead>
-                      <TableHead>{t.time}</TableHead>
-                      <TableHead className="text-right">{t.totalSpend}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {customerInsights.map((customer, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium">{customer.phone}</TableCell>
-                        <TableCell>{customer.time}</TableCell>
-                        <TableCell className="text-right font-bold text-primary">
-                          {customer.total}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </motion.div>
-
           {/* Counter Management */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -331,16 +282,6 @@ const Admin = () => {
             className="mt-8"
           >
             <CounterManagement />
-          </motion.div>
-
-          {/* Customer Dashboard */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="mt-8"
-          >
-            <CustomerDashboard />
           </motion.div>
 
           {/* Product Management Section */}
