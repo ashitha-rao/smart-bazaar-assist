@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Minus, Plus, Trash2, CreditCard, ArrowLeft, Sparkles, Mail, MessageCircle, Download } from 'lucide-react';
+import { Minus, Plus, Trash2, CreditCard, ArrowLeft, Sparkles, Mail, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import confetti from 'canvas-confetti';
 import Navbar from '@/components/Navbar';
@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { getRecommendations } from '@/data/products';
 import MagicLinkAuth from '@/components/auth/MagicLinkAuth';
-import { generateBillPDF, generateWhatsAppMessage } from '@/lib/generateBill';
+import { generateBillPDF } from '@/lib/generateBill';
 import BillingCounterStatus from '@/components/BillingCounterStatus';
 import FamilySyncMode from '@/components/FamilySyncMode';
 import FindHelpButton from '@/components/FindHelpButton';
@@ -219,19 +219,6 @@ const Checkout = () => {
     });
   };
 
-  const handleShareWhatsApp = () => {
-    const message = generateWhatsAppMessage({
-      items,
-      subtotal: totalPrice,
-      gst,
-      total: finalTotal,
-      email: email || 'Guest',
-    });
-    
-    // Open WhatsApp with pre-filled message (user can select contact)
-    const whatsappUrl = `https://wa.me/?text=${message}`;
-    window.open(whatsappUrl, '_blank');
-  };
 
   if (isComplete) {
     return (
@@ -307,17 +294,6 @@ const Checkout = () => {
                   </Button>
                 </motion.div>
                 
-                {email && (
-                  <Button 
-                    variant="outline" 
-                    size="lg" 
-                    className="w-full bg-green-500/10 border-green-500/30 text-green-600 hover:bg-green-500/20"
-                    onClick={handleShareWhatsApp}
-                  >
-                    <MessageCircle className="w-5 h-5 mr-2" />
-                    {t.shareViaWhatsApp}
-                  </Button>
-                )}
                 
                 <Link to="/products" className="w-full">
                   <Button variant="outline" size="lg" className="w-full" onClick={() => {
