@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Zap, Clock, ShoppingBag, Mic, Camera } from 'lucide-react';
+import { ArrowRight, Zap, Clock, ShoppingBag, Mic, Camera, LogIn } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -95,6 +95,12 @@ const Index = () => {
                 <Mic className="w-5 h-5 mr-2" />
                 {t.voiceSearch}
               </Button>
+              <Link to="/checkout">
+                <Button variant="outline" size="xl" className="border-white/30 text-white hover:bg-white/10 hover:text-white">
+                  <LogIn className="w-5 h-5 mr-2" />
+                  {t.signIn}
+                </Button>
+              </Link>
             </div>
 
             {/* AI Search Hint */}
