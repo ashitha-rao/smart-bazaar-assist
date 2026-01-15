@@ -278,6 +278,8 @@ interface Translations {
   notesSaved: string;
   adminNotesUpdated: string;
   save: string;
+  loginSuccessful: string;
+  completePaymentMessage: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -553,6 +555,8 @@ const translations: Record<Language, Translations> = {
     notesSaved: 'Notes Saved',
     adminNotesUpdated: 'Admin notes have been updated',
     save: 'Save',
+    loginSuccessful: 'Login successful',
+    completePaymentMessage: 'You can complete the payment now.',
   },
   kn: {
     // Navbar
@@ -826,6 +830,8 @@ const translations: Record<Language, Translations> = {
     notesSaved: 'ಟಿಪ್ಪಣಿಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ',
     adminNotesUpdated: 'ನಿರ್ವಾಹಕ ಟಿಪ್ಪಣಿಗಳನ್ನು ನವೀಕರಿಸಲಾಗಿದೆ',
     save: 'ಉಳಿಸಿ',
+    loginSuccessful: 'ಲಾಗಿನ್ ಯಶಸ್ವಿಯಾಗಿದೆ',
+    completePaymentMessage: 'ನೀವು ಈಗ ಪಾವತಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಬಹುದು.',
   },
   hi: {
     // Navbar
@@ -1099,6 +1105,8 @@ const translations: Record<Language, Translations> = {
     notesSaved: 'नोट्स सहेजे गए',
     adminNotesUpdated: 'एडमिन नोट्स अपडेट किए गए',
     save: 'सहेजें',
+    loginSuccessful: 'लॉगिन सफल',
+    completePaymentMessage: 'अब आप भुगतान पूरा कर सकते हैं।',
   },
 };
 
