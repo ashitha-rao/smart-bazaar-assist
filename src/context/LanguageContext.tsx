@@ -280,6 +280,7 @@ interface Translations {
   save: string;
   loginSuccessful: string;
   completePaymentMessage: string;
+  loggedOutSuccessfully: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -557,6 +558,7 @@ const translations: Record<Language, Translations> = {
     save: 'Save',
     loginSuccessful: 'Login successful',
     completePaymentMessage: 'You can complete the payment now.',
+    loggedOutSuccessfully: 'Logged out successfully',
   },
   kn: {
     // Navbar
@@ -832,6 +834,7 @@ const translations: Record<Language, Translations> = {
     save: 'ಉಳಿಸಿ',
     loginSuccessful: 'ಲಾಗಿನ್ ಯಶಸ್ವಿಯಾಗಿದೆ',
     completePaymentMessage: 'ನೀವು ಈಗ ಪಾವತಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಬಹುದು.',
+    loggedOutSuccessfully: 'ಯಶಸ್ವಿಯಾಗಿ ಲಾಗ್ ಔಟ್ ಆಗಿದೆ',
   },
   hi: {
     // Navbar
@@ -1107,6 +1110,7 @@ const translations: Record<Language, Translations> = {
     save: 'सहेजें',
     loginSuccessful: 'लॉगिन सफल',
     completePaymentMessage: 'अब आप भुगतान पूरा कर सकते हैं।',
+    loggedOutSuccessfully: 'सफलतापूर्वक लॉग आउट हो गया',
   },
 };
 

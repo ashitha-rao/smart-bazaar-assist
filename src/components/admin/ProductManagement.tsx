@@ -29,15 +29,15 @@ const ProductManagement = () => {
     setEditProduct(product);
   };
 
-  const handleUpdate = (productData: Omit<Product, 'id'>) => {
+  const handleUpdate = async (productData: Omit<Product, 'id'>) => {
     if (editProduct) {
-      updateProduct(editProduct.id, productData);
+      await updateProduct(editProduct.id, productData);
     }
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deleteId) {
-      deleteProduct(deleteId);
+      await deleteProduct(deleteId);
       setDeleteId(null);
     }
   };

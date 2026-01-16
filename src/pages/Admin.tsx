@@ -35,8 +35,8 @@ const Admin = () => {
     }
   };
 
-  const handleAddProduct = (productData: Omit<Product, 'id'>) => {
-    addProduct(productData);
+  const handleAddProduct = async (productData: Omit<Product, 'id'>) => {
+    await addProduct(productData);
   };
 
   const lowStockProducts = products.filter(p => p.stock < 5);

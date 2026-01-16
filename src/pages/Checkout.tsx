@@ -7,6 +7,7 @@ import Navbar from '@/components/Navbar';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { useProducts } from '@/context/ProductContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +24,7 @@ const Checkout = () => {
   const { items, updateQuantity, removeFromCart, totalPrice, clearCart, restoreCartFromAuth } = useCart();
   const { isAuthenticated, email } = useAuth();
   const { t } = useLanguage();
+  const { products } = useProducts();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
@@ -46,7 +48,7 @@ const Checkout = () => {
     }
   }, [isAuthenticated, restoreCartFromAuth, toast, t]);
 
-  const recommendations = getRecommendations(items);
+  const recommendations = getRecommendations(items, products);
   const gst = totalPrice * 0.05;
   const finalTotal = totalPrice + gst;
 
