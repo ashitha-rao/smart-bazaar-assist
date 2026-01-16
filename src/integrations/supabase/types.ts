@@ -184,6 +184,54 @@ export type Database = {
         }
         Relationships: []
       }
+      products: {
+        Row: {
+          aisle: string
+          brand: string
+          category: string
+          created_at: string
+          expiry_date: string
+          id: string
+          image: string
+          name: string
+          offer: string | null
+          original_price: number | null
+          price: number
+          stock: number
+          updated_at: string
+        }
+        Insert: {
+          aisle: string
+          brand: string
+          category: string
+          created_at?: string
+          expiry_date: string
+          id?: string
+          image: string
+          name: string
+          offer?: string | null
+          original_price?: number | null
+          price: number
+          stock?: number
+          updated_at?: string
+        }
+        Update: {
+          aisle?: string
+          brand?: string
+          category?: string
+          created_at?: string
+          expiry_date?: string
+          id?: string
+          image?: string
+          name?: string
+          offer?: string | null
+          original_price?: number | null
+          price?: number
+          stock?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       session_members: {
         Row: {
           id: string
