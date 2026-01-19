@@ -1,9 +1,8 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ShoppingCart, Home, Package, Shield, Menu, X, Globe, LogOut } from 'lucide-react';
+import { ShoppingCart, Home, Package, Shield, Menu, X, Globe } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useLanguage, Language, languageNames } from '@/context/LanguageContext';
-import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import {
@@ -12,14 +11,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
 
 const Navbar = () => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const { totalItems, cartBounce, clearCart } = useCart();
+  const { totalItems, cartBounce } = useCart();
   const { language, setLanguage, t } = useLanguage();
-  const { isAuthenticated, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
@@ -29,21 +25,6 @@ const Navbar = () => {
   ];
 
   const languages: Language[] = ['en', 'kn', 'hi'];
-
-  const handleLogout = async () => {
-    try {
-      await signOut();
-      // Clear all localStorage data
-      localStorage.removeItem('smart_bazaar_cart_auth_pending');
-      // Clear cart
-      clearCart();
-      toast.success(t.loggedOutSuccessfully);
-      navigate('/');
-    } catch (error) {
-      console.error('Logout error:', error);
-      toast.error('Failed to logout');
-    }
-  };
 
   return (
     <motion.nav
@@ -110,18 +91,6 @@ const Navbar = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Logout Button - Only show when authenticated */}
-            {isAuthenticated && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
-                onClick={handleLogout}
-              >
-                <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">{t.signOut}</span>
-              </Button>
-            )}
 
             {/* Cart Button */}
             <Link to="/checkout">
@@ -184,20 +153,6 @@ const Navbar = () => {
                   </Link>
                 );
               })}
-              {/* Mobile Logout Button */}
-              {isAuthenticated && (
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    handleLogout();
-                  }}
-                >
-                  <LogOut className="w-4 h-4" />
-                  {t.signOut}
-                </Button>
-              )}
             </div>
           </motion.div>
         )}

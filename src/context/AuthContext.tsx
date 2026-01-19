@@ -22,8 +22,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [profileCompleted, setProfileCompleted] = useState(false);
 
   useEffect(() => {
-    // Check initial session
-    const checkSession = async () => {
+    // Fresh session policy: clear all persisted state on every page load
+    // Exception: if this is an auth redirect (magic link callback)
+    const isAuthRedirect = window.location.hash.includes('access_token') || 
+                           window.location.search.includes('code=');
+    
+    const initSession = async () => {
+      if (!isAuthRedirect) {
+        // Clear any persisted session and storage for fresh start
+        await supabase.auth.signOut();
+        localStorage.removeItem('smart_bazaar_cart');
+        localStorage.removeItem('smart_bazaar_cart_auth_pending');
+        setUser(null);
+        setEmail(null);
+        setIsAuthenticated(false);
+        setProfileCompleted(false);
+        setIsLoading(false);
+        return;
+      }
+      
+      // Handle auth redirect - get the session
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
@@ -47,7 +65,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     };
 
-    checkSession();
+    initSession();
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
