@@ -33,9 +33,10 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       await signOut();
-      // Clear all localStorage data
+      // Clear all localStorage data related to auth and cart
       localStorage.removeItem('smart_bazaar_cart_auth_pending');
-      // Clear cart
+      localStorage.removeItem('smart_bazaar_cart');
+      // Clear cart state
       clearCart();
       toast.success(t.loggedOutSuccessfully);
       navigate('/');
