@@ -12,7 +12,15 @@ interface AuthContextType {
   signOut: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType>({
+  isAuthenticated: false,
+  email: null,
+  user: null,
+  isLoading: true,
+  profileCompleted: false,
+  setAuthenticated: () => {},
+  signOut: async () => {},
+});
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -32,13 +40,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setIsAuthenticated(true);
           
           // Check if profile is completed
-          const { data: profile } = await supabase
-            .from('customer_profiles')
-            .select('profile_completed')
-            .eq('user_id', session.user.id)
-            .single();
-          
-          setProfileCompleted(profile?.profile_completed || false);
+          try {
+            const { data: profile } = await supabase
+              .from('customer_profiles')
+              .select('profile_completed')
+              .eq('user_id', session.user.id)
+              .single();
+            
+            setProfileCompleted(profile?.profile_completed || false);
+          } catch (profileError) {
+            console.error('Error fetching profile:', profileError);
+          }
         }
       } catch (error) {
         console.error('Error checking session:', error);
@@ -58,13 +70,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         // Check if profile is completed
         setTimeout(async () => {
-          const { data: profile } = await supabase
-            .from('customer_profiles')
-            .select('profile_completed')
-            .eq('user_id', session.user.id)
-            .single();
-          
-          setProfileCompleted(profile?.profile_completed || false);
+          try {
+            const { data: profile } = await supabase
+              .from('customer_profiles')
+              .select('profile_completed')
+              .eq('user_id', session.user.id)
+              .single();
+            
+            setProfileCompleted(profile?.profile_completed || false);
+          } catch (profileError) {
+            console.error('Error fetching profile:', profileError);
+          }
         }, 0);
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
@@ -83,24 +99,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async () => {
-    // Clear all auth data completely
-    await supabase.auth.signOut();
-    
-    // Clear all localStorage items related to auth and cart
-    localStorage.removeItem('smart_bazaar_cart');
-    localStorage.removeItem('smart_bazaar_cart_auth_pending');
-    
-    // Clear Supabase auth tokens from localStorage
-    const keysToRemove: string[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && (key.startsWith('sb-') || key.includes('supabase'))) {
-        keysToRemove.push(key);
+    try {
+      // Clear all auth data completely
+      await supabase.auth.signOut();
+      
+      // Clear all localStorage items related to auth and cart
+      localStorage.removeItem('smart_bazaar_cart');
+      localStorage.removeItem('smart_bazaar_cart_auth_pending');
+      
+      // Clear Supabase auth tokens from localStorage
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith('sb-') || key.includes('supabase'))) {
+          keysToRemove.push(key);
+        }
       }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+    } catch (error) {
+      console.error('Error during sign out:', error);
     }
-    keysToRemove.forEach(key => localStorage.removeItem(key));
     
-    // Reset state
+    // Reset state regardless of error
     setUser(null);
     setEmail(null);
     setIsAuthenticated(false);
@@ -123,9 +143,5 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+  return useContext(AuthContext);
 };
