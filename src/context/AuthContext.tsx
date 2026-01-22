@@ -22,26 +22,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [profileCompleted, setProfileCompleted] = useState(false);
 
   useEffect(() => {
-    // Fresh session policy: clear all persisted state on every page load
-    // Exception: if this is an auth redirect (magic link callback)
-    const isAuthRedirect = window.location.hash.includes('access_token') || 
-                           window.location.search.includes('code=');
-    
-    const initSession = async () => {
-      if (!isAuthRedirect) {
-        // Clear any persisted session and storage for fresh start
-        await supabase.auth.signOut();
-        localStorage.removeItem('smart_bazaar_cart');
-        localStorage.removeItem('smart_bazaar_cart_auth_pending');
-        setUser(null);
-        setEmail(null);
-        setIsAuthenticated(false);
-        setProfileCompleted(false);
-        setIsLoading(false);
-        return;
-      }
-      
-      // Handle auth redirect - get the session
+    // Check for existing session on mount (persist login across refreshes)
+    const checkSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
@@ -65,7 +47,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     };
 
-    initSession();
+    checkSession();
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -75,13 +57,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsAuthenticated(true);
         
         // Check if profile is completed
-        const { data: profile } = await supabase
-          .from('customer_profiles')
-          .select('profile_completed')
-          .eq('user_id', session.user.id)
-          .single();
-        
-        setProfileCompleted(profile?.profile_completed || false);
+        setTimeout(async () => {
+          const { data: profile } = await supabase
+            .from('customer_profiles')
+            .select('profile_completed')
+            .eq('user_id', session.user.id)
+            .single();
+          
+          setProfileCompleted(profile?.profile_completed || false);
+        }, 0);
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
         setEmail(null);
@@ -99,7 +83,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async () => {
+    // Clear all auth data completely
     await supabase.auth.signOut();
+    
+    // Clear all localStorage items related to auth and cart
+    localStorage.removeItem('smart_bazaar_cart');
+    localStorage.removeItem('smart_bazaar_cart_auth_pending');
+    
+    // Clear Supabase auth tokens from localStorage
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key.startsWith('sb-') || key.includes('supabase'))) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+    
+    // Reset state
     setUser(null);
     setEmail(null);
     setIsAuthenticated(false);

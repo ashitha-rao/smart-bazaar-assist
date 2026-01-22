@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Filter, Mic, Camera } from 'lucide-react';
 import Navbar from '@/components/Navbar';
@@ -12,6 +12,7 @@ import { categories } from '@/data/products';
 import { useLanguage } from '@/context/LanguageContext';
 import FamilySyncMode from '@/components/FamilySyncMode';
 import FindHelpButton from '@/components/FindHelpButton';
+import { toast } from 'sonner';
 
 const Products = () => {
   const { products } = useProducts();
@@ -19,6 +20,8 @@ const Products = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [isListening, setIsListening] = useState(false);
+  const [isProcessingImage, setIsProcessingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -46,6 +49,121 @@ const Products = () => {
     } else {
       alert('Voice search is not supported in your browser.');
     }
+  };
+
+  const handleImageSearch = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    setIsProcessingImage(true);
+
+    try {
+      // Create a canvas to extract dominant colors from the image
+      const img = new Image();
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        img.src = e.target?.result as string;
+      };
+
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx?.drawImage(img, 0, 0);
+
+        // Simple image analysis - detect if it's a common grocery item based on colors
+        const imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height);
+        if (imageData) {
+          const colors = analyzeImageColors(imageData);
+          const suggestedCategory = suggestCategoryFromColors(colors);
+          
+          if (suggestedCategory && suggestedCategory !== 'All') {
+            setSelectedCategory(suggestedCategory);
+            toast.success(`Found products matching: ${suggestedCategory}`);
+          } else {
+            // Fall back to showing all products
+            toast.info('Showing all products. Try a clearer image of a grocery item.');
+          }
+        }
+        
+        setIsProcessingImage(false);
+      };
+
+      img.onerror = () => {
+        toast.error('Failed to process image');
+        setIsProcessingImage(false);
+      };
+
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Image search error:', error);
+      toast.error('Failed to process image');
+      setIsProcessingImage(false);
+    }
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Analyze dominant colors in the image
+  const analyzeImageColors = (imageData: ImageData): { r: number; g: number; b: number }[] => {
+    const data = imageData.data;
+    const colorCounts: Record<string, { count: number; r: number; g: number; b: number }> = {};
+
+    // Sample every 10th pixel for performance
+    for (let i = 0; i < data.length; i += 40) {
+      const r = Math.floor(data[i] / 32) * 32;
+      const g = Math.floor(data[i + 1] / 32) * 32;
+      const b = Math.floor(data[i + 2] / 32) * 32;
+      const key = `${r}-${g}-${b}`;
+
+      if (!colorCounts[key]) {
+        colorCounts[key] = { count: 0, r, g, b };
+      }
+      colorCounts[key].count++;
+    }
+
+    // Get top 5 colors
+    return Object.values(colorCounts)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5)
+      .map(({ r, g, b }) => ({ r, g, b }));
+  };
+
+  // Suggest category based on dominant colors
+  const suggestCategoryFromColors = (colors: { r: number; g: number; b: number }[]): string => {
+    // Check for green (vegetables, fruits)
+    const hasGreen = colors.some(c => c.g > c.r && c.g > c.b && c.g > 100);
+    // Check for yellow/orange (fruits, bakery)
+    const hasYellow = colors.some(c => c.r > 150 && c.g > 100 && c.b < 100);
+    // Check for red (fruits)
+    const hasRed = colors.some(c => c.r > 150 && c.g < 100 && c.b < 100);
+    // Check for brown (bakery, grains)
+    const hasBrown = colors.some(c => c.r > 100 && c.r < 180 && c.g > 60 && c.g < 140 && c.b < 100);
+    // Check for white (dairy)
+    const hasWhite = colors.some(c => c.r > 200 && c.g > 200 && c.b > 200);
+
+    if (hasGreen) return 'Vegetables';
+    if (hasRed) return 'Fruits';
+    if (hasYellow) return 'Fruits';
+    if (hasBrown) return 'Bakery';
+    if (hasWhite) return 'Dairy';
+
+    return 'All';
   };
 
   // Map categories to translated names
@@ -122,9 +240,24 @@ const Products = () => {
               >
                 <Mic className={`w-5 h-5 ${isListening ? 'animate-pulse' : ''}`} />
               </Button>
-              <Button variant="outline" size="icon" className="h-12 w-12">
-                <Camera className="w-5 h-5" />
+              <Button 
+                variant={isProcessingImage ? 'hero' : 'outline'} 
+                size="icon" 
+                className="h-12 w-12"
+                onClick={handleImageSearch}
+                disabled={isProcessingImage}
+              >
+                <Camera className={`w-5 h-5 ${isProcessingImage ? 'animate-pulse' : ''}`} />
               </Button>
+              {/* Hidden file input for image upload */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
             </div>
 
             {/* Category Filter */}
