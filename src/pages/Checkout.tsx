@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Minus, Plus, Trash2, CreditCard, ArrowLeft, Sparkles, Mail, Download } from 'lucide-react';
+import { Minus, Plus, Trash2, CreditCard, ArrowLeft, Sparkles, Mail, Download, Scale } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import confetti from 'canvas-confetti';
 import Navbar from '@/components/Navbar';
@@ -19,6 +19,7 @@ import FamilySyncMode from '@/components/FamilySyncMode';
 import FindHelpButton from '@/components/FindHelpButton';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { formatWeight } from '@/lib/productUtils';
 
 const Checkout = () => {
   const { items, updateQuantity, removeFromCart, totalPrice, clearCart, restoreCartFromAuth } = useCart();
@@ -264,8 +265,13 @@ const Checkout = () => {
                   <div className="space-y-2 text-sm">
                     {items.map(item => (
                       <div key={item.id} className="flex justify-between">
-                        <span className="text-muted-foreground">{item.name} x{item.quantity}</span>
-                        <span className="text-foreground">Rs. {item.price * item.quantity}</span>
+                        <span className="text-muted-foreground">
+                          {item.name} 
+                          {item.weightInGrams ? ` (${formatWeight(item.weightInGrams)})` : ` x${item.quantity}`}
+                        </span>
+                        <span className="text-foreground">
+                          Rs. {((item.calculatedPrice ?? item.price) * item.quantity).toFixed(2)}
+                        </span>
                       </div>
                     ))}
                     <div className="h-px bg-border my-3" />
@@ -469,9 +475,21 @@ const Checkout = () => {
                               <p className="text-sm text-muted-foreground">
                                 {item.brand}
                               </p>
-                              <p className="font-bold text-primary">
-                                Rs. {item.price}
-                              </p>
+                              {item.weightInGrams ? (
+                                <div className="flex items-center gap-1">
+                                  <Scale className="w-3 h-3 text-primary" />
+                                  <span className="text-xs text-muted-foreground">
+                                    {formatWeight(item.weightInGrams)}
+                                  </span>
+                                  <span className="font-bold text-primary">
+                                    Rs. {item.calculatedPrice?.toFixed(2)}
+                                  </span>
+                                </div>
+                              ) : (
+                                <p className="font-bold text-primary">
+                                  Rs. {item.price}
+                                </p>
+                              )}
                             </div>
 
                             {/* Quantity Controls */}

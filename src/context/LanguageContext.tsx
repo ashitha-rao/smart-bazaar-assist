@@ -287,6 +287,10 @@ interface Translations {
   yourCurrentLocation: string;
   selectLocation: string;
   typeYourLocation: string;
+  
+  // Weight-based products
+  enterWeight: string;
+  perKg: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -571,6 +575,10 @@ const translations: Record<Language, Translations> = {
     yourCurrentLocation: 'Your Current Location',
     selectLocation: 'Select your location',
     typeYourLocation: 'Type your location...',
+    
+    // Weight-based products
+    enterWeight: 'Enter weight',
+    perKg: 'per kg',
   },
   kn: {
     // Navbar
@@ -853,6 +861,10 @@ const translations: Record<Language, Translations> = {
     yourCurrentLocation: 'ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಸ್ಥಳ',
     selectLocation: 'ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಆಯ್ಕೆಮಾಡಿ',
     typeYourLocation: 'ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಟೈಪ್ ಮಾಡಿ...',
+    
+    // Weight-based products
+    enterWeight: 'ತೂಕ ನಮೂದಿಸಿ',
+    perKg: 'ಪ್ರತಿ ಕೆಜಿಗೆ',
   },
   hi: {
     // Navbar
@@ -1135,6 +1147,10 @@ const translations: Record<Language, Translations> = {
     yourCurrentLocation: 'आपका वर्तमान स्थान',
     selectLocation: 'अपना स्थान चुनें',
     typeYourLocation: 'अपना स्थान टाइप करें...',
+    
+    // Weight-based products
+    enterWeight: 'वज़न दर्ज करें',
+    perKg: 'प्रति किलो',
   },
 };
 
