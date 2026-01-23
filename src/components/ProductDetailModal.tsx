@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, Plus, MapPin, Scale, Info } from 'lucide-react';
 import { Product, useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useLanguage } from '@/context/LanguageContext';
 import ProductFAQ from './ProductFAQ';
+import { getWeightInfo, calculateWeightPrice, formatWeight } from '@/lib/productUtils';
 
 interface ProductDetailModalProps {
   product: Product | null;
@@ -88,14 +91,36 @@ const extractUnitInfo = (productName: string, price: number) => {
 const ProductDetailModal = ({ product, isOpen, onClose, onShowMap }: ProductDetailModalProps) => {
   const { addToCart } = useCart();
   const { t } = useLanguage();
+  const [weightInput, setWeightInput] = useState('');
+  const [weightUnit, setWeightUnit] = useState<'g' | 'kg'>('g');
 
   if (!product) return null;
 
   const unitInfo = extractUnitInfo(product.name, product.price);
+  const weightInfo = getWeightInfo(product.name, product.price);
+  const isWeightBased = !!weightInfo;
   const isImageUrl = product.image.startsWith('http');
 
+  const getWeightInGrams = (): number => {
+    const value = parseFloat(weightInput) || 0;
+    return weightUnit === 'kg' ? value * 1000 : value;
+  };
+
+  const getCalculatedPrice = (): number => {
+    if (!weightInfo) return product.price;
+    const grams = getWeightInGrams();
+    return calculateWeightPrice(weightInfo.pricePerGram, grams);
+  };
+
   const handleAddToCart = () => {
-    addToCart(product);
+    if (isWeightBased) {
+      const grams = getWeightInGrams();
+      if (grams <= 0) return;
+      addToCart(product, grams);
+    } else {
+      addToCart(product);
+    }
+    setWeightInput('');
     onClose();
   };
 
@@ -198,12 +223,72 @@ const ProductDetailModal = ({ product, isOpen, onClose, onShowMap }: ProductDeta
               </Button>
             </div>
 
+            {/* Weight Input for weight-based products */}
+            {isWeightBased && weightInfo && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 bg-accent/30 rounded-xl border border-accent"
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <Scale className="w-4 h-4 text-primary" />
+                  <span className="font-medium text-foreground">
+                    {t.enterWeight || 'Enter Weight'}
+                  </span>
+                </div>
+                <div className="flex gap-2 mb-3">
+                  <Input
+                    type="number"
+                    placeholder="Enter amount"
+                    value={weightInput}
+                    onChange={(e) => setWeightInput(e.target.value)}
+                    className="flex-1"
+                    min="0"
+                    step="any"
+                  />
+                  <div className="flex bg-background rounded-md border">
+                    <button
+                      className={`px-4 py-2 text-sm font-medium rounded-l-md transition-colors ${
+                        weightUnit === 'g' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'
+                      }`}
+                      onClick={() => setWeightUnit('g')}
+                    >
+                      grams
+                    </button>
+                    <button
+                      className={`px-4 py-2 text-sm font-medium rounded-r-md transition-colors ${
+                        weightUnit === 'kg' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'
+                      }`}
+                      onClick={() => setWeightUnit('kg')}
+                    >
+                      kg
+                    </button>
+                  </div>
+                </div>
+                {getWeightInGrams() > 0 && (
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      {formatWeight(getWeightInGrams())}
+                    </span>
+                    <span className="font-bold text-primary text-lg">
+                      Rs. {getCalculatedPrice().toFixed(2)}
+                    </span>
+                  </div>
+                )}
+              </motion.div>
+            )}
+
             {/* Product FAQ Section */}
             <ProductFAQ category={product.category} productName={product.name} />
 
             {/* Actions */}
             <div className="flex gap-3 pt-2">
-              <Button variant="hero" className="flex-1" onClick={handleAddToCart}>
+              <Button 
+                variant="hero" 
+                className="flex-1" 
+                onClick={handleAddToCart}
+                disabled={isWeightBased && getWeightInGrams() <= 0}
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 {t.addToCart || 'Add to Cart'}
               </Button>

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { getWeightInfo, calculateWeightPrice } from '@/lib/productUtils';
 
 export interface Product {
   id: string;
@@ -16,13 +17,16 @@ export interface Product {
 
 export interface CartItem extends Product {
   quantity: number;
+  weightInGrams?: number; // For weight-based products
+  calculatedPrice?: number; // Price based on weight
 }
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (product: Product) => void;
+  addToCart: (product: Product, weightInGrams?: number) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
+  updateWeight: (productId: string, weightInGrams: number) => void;
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
@@ -87,17 +91,37 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     return false;
   };
 
-  const addToCart = (product: Product) => {
+  const addToCart = (product: Product, weightInGrams?: number) => {
+    const weightInfo = getWeightInfo(product.name, product.price);
+    
     setItems(prev => {
-      const existing = prev.find(item => item.id === product.id);
-      if (existing) {
+      // For weight-based products, we check by ID + weight to allow multiple entries
+      const existing = prev.find(item => 
+        item.id === product.id && 
+        (!weightInGrams || item.weightInGrams === weightInGrams)
+      );
+      
+      if (existing && !weightInGrams) {
+        // Non-weight product: just increment quantity
         return prev.map(item =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       }
-      return [...prev, { ...product, quantity: 1 }];
+      
+      // Calculate price for weight-based products
+      let calculatedPrice = product.price;
+      if (weightInfo && weightInGrams) {
+        calculatedPrice = calculateWeightPrice(weightInfo.pricePerGram, weightInGrams);
+      }
+      
+      return [...prev, { 
+        ...product, 
+        quantity: 1,
+        weightInGrams: weightInGrams,
+        calculatedPrice: weightInGrams ? calculatedPrice : undefined,
+      }];
     });
     
     // Trigger bounce animation
@@ -121,10 +145,30 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
+  const updateWeight = (productId: string, weightInGrams: number) => {
+    setItems(prev =>
+      prev.map(item => {
+        if (item.id === productId) {
+          const weightInfo = getWeightInfo(item.name, item.price);
+          if (weightInfo) {
+            const calculatedPrice = calculateWeightPrice(weightInfo.pricePerGram, weightInGrams);
+            return { ...item, weightInGrams, calculatedPrice };
+          }
+        }
+        return item;
+      })
+    );
+  };
+
   const clearCart = () => setItems([]);
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  
+  // Calculate total price considering weight-based items
+  const totalPrice = items.reduce((sum, item) => {
+    const itemPrice = item.calculatedPrice ?? item.price;
+    return sum + itemPrice * item.quantity;
+  }, 0);
 
   return (
     <CartContext.Provider
@@ -133,6 +177,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         addToCart,
         removeFromCart,
         updateQuantity,
+        updateWeight,
         clearCart,
         totalItems,
         totalPrice,
