@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
-
+import ThemeToggle from './ThemeToggle';
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -84,8 +84,10 @@ const Navbar = () => {
             })}
           </div>
 
-          {/* Right Side - Language, Sign Out & Cart */}
+          {/* Right Side - Theme, Language, Sign Out & Cart */}
           <div className="flex items-center gap-2">
+            {/* Theme Toggle */}
+            <ThemeToggle />
             {/* Language Selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

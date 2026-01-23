@@ -281,6 +281,12 @@ interface Translations {
   loginSuccessful: string;
   completePaymentMessage: string;
   loggedOutSuccessfully: string;
+  
+  // Find Help additional
+  pleaseSelectLocation: string;
+  yourCurrentLocation: string;
+  selectLocation: string;
+  typeYourLocation: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -559,6 +565,12 @@ const translations: Record<Language, Translations> = {
     loginSuccessful: 'Login successful',
     completePaymentMessage: 'You can complete the payment now.',
     loggedOutSuccessfully: 'Logged out successfully',
+    
+    // Find Help additional
+    pleaseSelectLocation: 'Please select or enter your location',
+    yourCurrentLocation: 'Your Current Location',
+    selectLocation: 'Select your location',
+    typeYourLocation: 'Type your location...',
   },
   kn: {
     // Navbar
@@ -835,6 +847,12 @@ const translations: Record<Language, Translations> = {
     loginSuccessful: 'ಲಾಗಿನ್ ಯಶಸ್ವಿಯಾಗಿದೆ',
     completePaymentMessage: 'ನೀವು ಈಗ ಪಾವತಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಬಹುದು.',
     loggedOutSuccessfully: 'ಯಶಸ್ವಿಯಾಗಿ ಲಾಗ್ ಔಟ್ ಆಗಿದೆ',
+    
+    // Find Help additional
+    pleaseSelectLocation: 'ದಯವಿಟ್ಟು ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಆಯ್ಕೆಮಾಡಿ ಅಥವಾ ನಮೂದಿಸಿ',
+    yourCurrentLocation: 'ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಸ್ಥಳ',
+    selectLocation: 'ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಆಯ್ಕೆಮಾಡಿ',
+    typeYourLocation: 'ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಟೈಪ್ ಮಾಡಿ...',
   },
   hi: {
     // Navbar
@@ -1111,6 +1129,12 @@ const translations: Record<Language, Translations> = {
     loginSuccessful: 'लॉगिन सफल',
     completePaymentMessage: 'अब आप भुगतान पूरा कर सकते हैं।',
     loggedOutSuccessfully: 'सफलतापूर्वक लॉग आउट हो गया',
+    
+    // Find Help additional
+    pleaseSelectLocation: 'कृपया अपना स्थान चुनें या दर्ज करें',
+    yourCurrentLocation: 'आपका वर्तमान स्थान',
+    selectLocation: 'अपना स्थान चुनें',
+    typeYourLocation: 'अपना स्थान टाइप करें...',
   },
 };
 
