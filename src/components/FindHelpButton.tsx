@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { HandHelping, MapPin, Package, MessageSquare, Check } from 'lucide-react';
+import { HandHelping, MapPin, Package, MessageSquare, Check, Navigation } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/context/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -16,10 +17,28 @@ interface FindHelpButtonProps {
   productName?: string;
 }
 
+// Predefined store locations for selection
+const STORE_LOCATIONS = [
+  { value: 'entrance', label: 'Store Entrance' },
+  { value: 'aisle-a', label: 'Aisle A - Fruits & Vegetables' },
+  { value: 'aisle-b', label: 'Aisle B - Dairy & Eggs' },
+  { value: 'aisle-c', label: 'Aisle C - Bakery' },
+  { value: 'aisle-d', label: 'Aisle D - Beverages' },
+  { value: 'aisle-e', label: 'Aisle E - Snacks & Chips' },
+  { value: 'aisle-f', label: 'Aisle F - Frozen Foods' },
+  { value: 'aisle-g', label: 'Aisle G - Personal Care' },
+  { value: 'aisle-h', label: 'Aisle H - Household Items' },
+  { value: 'checkout', label: 'Checkout Area' },
+  { value: 'customer-service', label: 'Customer Service Desk' },
+  { value: 'other', label: 'Other (type below)' },
+];
+
 const FindHelpButton = ({ currentAisle, productName }: FindHelpButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [requestType, setRequestType] = useState<'aisle' | 'product' | 'general'>('aisle');
-  const [aisleLocation, setAisleLocation] = useState(currentAisle || '');
+  const [selectedLocation, setSelectedLocation] = useState(currentAisle || '');
+  const [customLocation, setCustomLocation] = useState('');
+  const [customerName, setCustomerName] = useState('');
   const [product, setProduct] = useState(productName || '');
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -27,20 +46,46 @@ const FindHelpButton = ({ currentAisle, productName }: FindHelpButtonProps) => {
   const { t } = useLanguage();
   const { toast } = useToast();
 
+  const getEffectiveLocation = () => {
+    if (selectedLocation === 'other') {
+      return customLocation;
+    }
+    const locationObj = STORE_LOCATIONS.find(loc => loc.value === selectedLocation);
+    return locationObj?.label || selectedLocation || customLocation;
+  };
+
   const handleSubmit = async () => {
+    const effectiveLocation = getEffectiveLocation();
+    
+    if (!effectiveLocation && requestType !== 'product') {
+      toast({ title: t.pleaseSelectLocation || 'Please select or enter your location', variant: 'destructive' });
+      return;
+    }
+
     setIsSubmitting(true);
 
-    // Generate a customer identifier (could be session-based or device-based)
-    const customerId = localStorage.getItem('smartbazaar-customer-id') || 
+    // Generate or retrieve customer identifier
+    const storedCustomerId = localStorage.getItem('smartbazaar-customer-id');
+    const customerId = storedCustomerId || 
       `customer-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
-    localStorage.setItem('smartbazaar-customer-id', customerId);
+    
+    if (!storedCustomerId) {
+      localStorage.setItem('smartbazaar-customer-id', customerId);
+    }
+
+    // Store customer name if provided
+    if (customerName) {
+      localStorage.setItem('smartbazaar-customer-name', customerName);
+    }
+
+    const displayName = customerName || localStorage.getItem('smartbazaar-customer-name') || customerId.slice(-8);
 
     const { error } = await supabase.from('help_requests').insert({
       request_type: requestType,
-      aisle_location: aisleLocation || null,
+      aisle_location: effectiveLocation || null,
       product_name: product || null,
-      message: message || null,
-      customer_identifier: customerId,
+      message: customerName ? `[${displayName}] ${message || ''}`.trim() : message || null,
+      customer_identifier: customerName ? `${displayName} (${customerId.slice(-6)})` : customerId,
     });
 
     setIsSubmitting(false);
@@ -57,6 +102,8 @@ const FindHelpButton = ({ currentAisle, productName }: FindHelpButtonProps) => {
       setIsOpen(false);
       setIsSuccess(false);
       setMessage('');
+      setSelectedLocation('');
+      setCustomLocation('');
     }, 2000);
   };
 
@@ -82,8 +129,8 @@ const FindHelpButton = ({ currentAisle, productName }: FindHelpButtonProps) => {
             animate={{ scale: 1, opacity: 1 }}
             className="py-8 text-center"
           >
-            <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Check className="w-8 h-8 text-green-500" />
+            <div className="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Check className="w-8 h-8 text-success" />
             </div>
             <p className="font-semibold text-foreground">
               {t.helpOnTheWay || 'Help is on the way!'}
@@ -97,6 +144,46 @@ const FindHelpButton = ({ currentAisle, productName }: FindHelpButtonProps) => {
             <p className="text-sm text-muted-foreground">
               {t.requestHelpSilently || 'Request help without talking. Staff will come to you.'}
             </p>
+
+            {/* Customer Name (Optional) */}
+            <div>
+              <Label className="text-sm font-medium">{t.yourName || 'Your Name (optional)'}</Label>
+              <Input
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                placeholder={t.enterYourName || 'Enter your name'}
+                className="mt-1"
+              />
+            </div>
+
+            {/* Current Location Selection */}
+            <div className="p-3 rounded-lg border border-primary/30 bg-primary/5">
+              <Label className="text-sm font-medium flex items-center gap-2 mb-2">
+                <Navigation className="w-4 h-4 text-primary" />
+                {t.yourCurrentLocation || 'Your Current Location'}
+              </Label>
+              <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                <SelectTrigger className="bg-background">
+                  <SelectValue placeholder={t.selectLocation || 'Select your location'} />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border border-border z-50">
+                  {STORE_LOCATIONS.map((location) => (
+                    <SelectItem key={location.value} value={location.value}>
+                      {location.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              {selectedLocation === 'other' && (
+                <Input
+                  value={customLocation}
+                  onChange={(e) => setCustomLocation(e.target.value)}
+                  placeholder={t.typeYourLocation || 'Type your location...'}
+                  className="mt-2"
+                />
+              )}
+            </div>
 
             <RadioGroup
               value={requestType}
@@ -124,18 +211,6 @@ const FindHelpButton = ({ currentAisle, productName }: FindHelpButtonProps) => {
                 </Label>
               </div>
             </RadioGroup>
-
-            {requestType === 'aisle' && (
-              <div>
-                <Label className="text-sm font-medium">{t.whichAisle || 'Which aisle are you in?'}</Label>
-                <Input
-                  value={aisleLocation}
-                  onChange={(e) => setAisleLocation(e.target.value)}
-                  placeholder="e.g., A1, B2, C3"
-                  className="mt-1"
-                />
-              </div>
-            )}
 
             {requestType === 'product' && (
               <div>
