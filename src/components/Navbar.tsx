@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import ThemeToggle from './ThemeToggle';
+import FeedbackButton from './FeedbackButton';
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -84,8 +85,10 @@ const Navbar = () => {
             })}
           </div>
 
-          {/* Right Side - Theme, Language, Sign Out & Cart */}
+          {/* Right Side - Feedback, Theme, Language, Sign Out & Cart */}
           <div className="flex items-center gap-2">
+            {/* Feedback Button */}
+            <FeedbackButton />
             {/* Theme Toggle */}
             <ThemeToggle />
             {/* Language Selector */}
