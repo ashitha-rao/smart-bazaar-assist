@@ -14,6 +14,7 @@ import Checkout from "./pages/Checkout";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import CompleteProfile from "./pages/CompleteProfile";
+import ChatWidget from "./components/chat/ChatWidget";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
               <CartProvider>
                 <Toaster />
                 <Sonner />
+                <ChatWidget />
                 <BrowserRouter>
                   <Routes>
                     <Route path="/" element={<Index />} />
